@@ -1,0 +1,21 @@
+services:
+  chat_mongo:
+    container_name: chat_mongo_ms
+    image: mongo:8.0.9
+    restart: "unless-stopped"
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_ms_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME:root}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD:password}
+      MONGO_INITDB_DATABASE: chat
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongosh admin -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --quiet | grep 1
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+volumes:
+  mongo_ms_data:
