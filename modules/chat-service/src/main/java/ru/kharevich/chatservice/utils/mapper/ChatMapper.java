@@ -1,6 +1,9 @@
 package ru.kharevich.chatservice.utils.mapper;
 
-import org.mapstruct.*;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import ru.kharevich.chatservice.dto.request.ChatRequest;
 import ru.kharevich.chatservice.dto.response.ChatResponse;
 import ru.kharevich.chatservice.model.Chat;

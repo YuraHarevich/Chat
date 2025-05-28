@@ -14,5 +14,5 @@ public record PageableResponse<T> (
 
         List<T> content
 
-){
+) {
 }

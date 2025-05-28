@@ -5,32 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4198adc2-0c39-4c08-b873-d5496f0f9a4b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/amplicode-jpa.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/amplicode-settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/dto/request/MessageRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/dto/response/ChatResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/Chat.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/Message.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/MessageStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/chat-service/.gitattributes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/chat-service/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/chat-service/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/chat-service/mvnw" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/chat-service/mvnw.cmd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/chat-service/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/ChatServiceApplication.java" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/repository/ChatRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/utils/mapper/ChatMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/utils/mapper/MessageMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/utils/mapper/PageMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/${project.build.directory}/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/modules/chat-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/Chat.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/Chat.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/Message.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/chat-service/src/main/resources/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/chat-service/src/test/java/ru/kharevich/chatservice/ChatServiceApplicationTests.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageOptionsProvider">
+    <option name="myAddOrReplace" value="0" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -39,66 +31,142 @@
         <option value="com.haulmont.ampsbb.Component" />
         <option value="SpringRestController" />
         <option value="Record" />
-        <option value="Class" />
+        <option value="Exception" />
+        <option value="JUnit5 Test Class" />
+        <option value="Enum" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GradleModuleStateConfig" initialized="true" />
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="2xgAjYGwkLPO9pFN7YJxggJGHtk" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Maven.Backend [clean].executor": "Run",
-    "Maven.Backend [compile].executor": "Run",
-    "Maven.Backend [validate].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.ChatServiceApplication.executor": "Debug",
-    "git-widget-placeholder": "feat/chat__service",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/juare/Documents/Chat/project/Backend/modules/chat-service/src/main/java/ru/kharevich/chatservice",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;JUnit.ChatControllerIntegrationTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ChatControllerIntegrationTest.getMessagesByChatId_NonExistingChat_ReturnsNotFound.executor&quot;: &quot;Debug&quot;,
+    &quot;JUnit.ChatServiceTest.executor&quot;: &quot;Coverage&quot;,
+    &quot;Maven.Backend [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.Backend [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.Backend [validate].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.ChatServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/chat__service__unit__integr__tests&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_directory_selection&quot;: &quot;C:/Users/juare/Documents/Chat/project/Backend/modules/chat-service/src/test/java/ru/kharevich/chatservice&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/juare/Documents/Chat/project/Backend/modules/chat-service/src/main/java/ru/kharevich/chatservice&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "mongo"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mongo&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="ru.kharevich.chatservice.model" />
+      <recent name="ru.kharevich.chatservice.service" />
+      <recent name="ru.kharevich.chatservice.utils.fabrics" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\juare\Documents\Chat\project\Backend\modules\chat-service\src\main\java\ru\kharevich\chatservice" />
     </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="ru.kharevich.chatservice.utils.fabrics" />
+      <recent name="ru.kharevich.chatservice" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="ru.kharevich.chatservice.controller.impl" />
+      <recent name="ru.kharevich.chatservice.service.impl" />
+    </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.ChatServiceTest">
+    <configuration name="ChatControllerIntegrationTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="chat-service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.kharevich.chatservice.controller.impl.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ru.kharevich.chatservice.controller.impl" />
+      <option name="MAIN_CLASS_NAME" value="ru.kharevich.chatservice.controller.impl.ChatControllerIntegrationTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ChatControllerIntegrationTest.getMessagesByChatId_NonExistingChat_ReturnsNotFound" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="chat-service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.kharevich.chatservice.controller.impl.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ru.kharevich.chatservice.controller.impl" />
+      <option name="MAIN_CLASS_NAME" value="ru.kharevich.chatservice.controller.impl.ChatControllerIntegrationTest" />
+      <option name="METHOD_NAME" value="getMessagesByChatId_NonExistingChat_ReturnsNotFound" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ChatServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="chat-service" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.kharevich.chatservice.service.impl.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ru.kharevich.chatservice.service.impl" />
+      <option name="MAIN_CLASS_NAME" value="ru.kharevich.chatservice.service.impl.ChatServiceTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="ChatServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="chat-service" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="ru.kharevich.chatservice.ChatServiceApplication" />
@@ -106,6 +174,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.ChatServiceTest" />
+        <item itemvalue="JUnit.ChatControllerIntegrationTest" />
+        <item itemvalue="JUnit.ChatControllerIntegrationTest.getMessagesByChatId_NonExistingChat_ReturnsNotFound" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -122,27 +197,20 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1748349479181</updated>
-      <workItem from="1748349480616" duration="13025000" />
+      <workItem from="1748349480616" duration="13785000" />
+      <workItem from="1748426507026" duration="12033000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/service/impl/ChatServiceImpl.java</url>
-          <line>43</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/service/impl/ChatServiceImpl.java</url>
-          <line>66</line>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Backend$ChatControllerIntegrationTest.ic" NAME="ChatControllerIntegrationTest Coverage Results" MODIFIED="1748436638215" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>ru.kharevich.chatservice.controller.impl.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/Backend$ChatServiceTest.ic" NAME="ChatServiceTest Coverage Results" MODIFIED="1748429807039" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>ru.kharevich.chatservice.service.impl.*</FILTER>
+    </SUITE>
   </component>
 </project>

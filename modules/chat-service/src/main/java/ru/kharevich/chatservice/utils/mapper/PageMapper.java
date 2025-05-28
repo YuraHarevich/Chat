@@ -1,10 +1,10 @@
 package ru.kharevich.chatservice.utils.mapper;
 
-import org.mapstruct.*;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.springframework.data.domain.Page;
-import ru.kharevich.chatservice.dto.response.ChatResponse;
 import ru.kharevich.chatservice.dto.response.PageableResponse;
-import ru.kharevich.chatservice.model.Chat;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,

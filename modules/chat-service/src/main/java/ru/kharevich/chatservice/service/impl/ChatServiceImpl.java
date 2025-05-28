@@ -4,14 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import ru.kharevich.chatservice.dto.request.ChatRequest;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
 import ru.kharevich.chatservice.dto.response.MessageResponse;
 import ru.kharevich.chatservice.dto.response.ChatResponse;
 import ru.kharevich.chatservice.dto.response.PageableResponse;
+import ru.kharevich.chatservice.exception.ChatNotFoundException;
 import ru.kharevich.chatservice.model.Message;
 import ru.kharevich.chatservice.model.MessageStatus;
 import ru.kharevich.chatservice.repository.ChatRepository;
@@ -21,10 +20,10 @@ import ru.kharevich.chatservice.service.ChatService;
 import ru.kharevich.chatservice.utils.mapper.ChatMapper;
 import ru.kharevich.chatservice.utils.mapper.MessageMapper;
 import ru.kharevich.chatservice.utils.mapper.PageMapper;
+import ru.kharevich.chatservice.utils.validation.ChatServiceValidationService;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -36,7 +35,10 @@ public class ChatServiceImpl implements ChatService {
 
     private final PageMapper pageMapper;
 
+    private final ChatServiceValidationService chatServiceValidationService;
+
     private final MessageRepository messageRepository;
+
     private final MessageMapper messageMapper;
 
     public PageableResponse<ChatResponse> getAllChats(int size, int pageNumber) {
@@ -48,22 +50,27 @@ public class ChatServiceImpl implements ChatService {
     public ChatResponse getChat(ObjectId id) {
         Optional<Chat> chatOptional = chatRepository.findById(id);
         Chat chat = chatOptional.orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
+                new ChatNotFoundException("Chat with id `%s` not found".formatted(id)));
         return chatMapper.toResponse(chat);
     }
 
     public ChatResponse createChat(ChatRequest chat) {
+        chatServiceValidationService.validateIfThrowsUsersNotFound(chat.participants());
         return chatMapper.toResponse(chatRepository.save(chatMapper.toEntity(chat)));
     }
 
     public PageableResponse<MessageResponse> getMessagesByChatId(int size, int pageNumber, ObjectId chatId) {
+        chatServiceValidationService.validateIfThrowsChatNotFound(chatId);
+
         Page<Message> messagePage = messageRepository.findByChatIdOrderBySentTimeDesc(chatId, PageRequest.of(pageNumber,size));
         Page<MessageResponse> convertedToResponseMessagePage = messagePage.map(messageMapper::toResponse);
         return pageMapper.toResponse(convertedToResponseMessagePage);
-
     }
 
     public MessageResponse sendMessage(ObjectId chatId, MessageRequest messageRequest) {
+        chatServiceValidationService.validateIfThrowsChatNotFound(chatId);
+        chatServiceValidationService.validateIfThrowsUsersNotFound(Set.of(messageRequest.sender(), messageRequest.receiver()));
+
         Message msg = messageMapper.toEntity(messageRequest, chatId);
         msg.setStatus(MessageStatus.SENT);
         messageRepository.save(msg);

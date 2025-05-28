@@ -1,23 +1,26 @@
 package ru.kharevich.chatservice.service;
 
-
-import jakarta.validation.constraints.Min;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import ru.kharevich.chatservice.dto.request.ChatRequest;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
-import ru.kharevich.chatservice.dto.response.MessageResponse;
 import ru.kharevich.chatservice.dto.response.ChatResponse;
+import ru.kharevich.chatservice.dto.response.MessageResponse;
 import ru.kharevich.chatservice.dto.response.PageableResponse;
+import ru.kharevich.chatservice.exception.ChatNotFoundException;
+
+import java.util.Optional;
+import java.util.Set;
 
 public interface ChatService {
+    public PageableResponse<ChatResponse> getAllChats(int size, int pageNumber);
 
-    PageableResponse<ChatResponse> getAllChats(int size, int page);
+    public ChatResponse getChat(ObjectId id);
 
-    ChatResponse getChat(ObjectId id);
+    public ChatResponse createChat(ChatRequest chat);
 
-    ChatResponse createChat(ChatRequest chat);
+    public PageableResponse<MessageResponse> getMessagesByChatId(int size, int pageNumber, ObjectId chatId);
 
-    PageableResponse<MessageResponse> getMessagesByChatId(int size, @Min(0) int pageNumber, ObjectId chatId);
-
-    MessageResponse sendMessage(ObjectId chatId, MessageRequest messageRequest);
+    public MessageResponse sendMessage(ObjectId chatId, MessageRequest messageRequest);
 }
