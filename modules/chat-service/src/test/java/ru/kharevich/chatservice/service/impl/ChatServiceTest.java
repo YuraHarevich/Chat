@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -39,28 +41,22 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ChatServiceTest {
 
+    private final ObjectId existingChatId = new ObjectId();
+    private final ObjectId nonExistingChatId = new ObjectId();
     @Mock
     private ChatRepository chatRepository;
-
     @Mock
     private ChatMapper chatMapper;
-
     @Mock
     private PageMapper pageMapper;
-
     @Mock
     private MessageRepository messageRepository;
-
     @Mock
     private MessageMapper messageMapper;
     @Mock
     private ChatServiceValidationService chatServiceValidationService;
-
     @InjectMocks
     private ChatServiceImpl chatService;
-
-    private final ObjectId existingChatId = new ObjectId();
-    private final ObjectId nonExistingChatId = new ObjectId();
 
     // Тесты для getAllChats
     @Test
@@ -123,6 +119,7 @@ class ChatServiceTest {
         assertNotNull(result);
         assertEquals(request.participants(), result.participants());
     }
+
     // Тесты для getMessagesByChatId
     @Test
     void getMessagesByChatId_WithExistingChat_ReturnsMessages() {

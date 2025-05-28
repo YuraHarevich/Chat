@@ -24,9 +24,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static ru.kharevich.chatservice.utils.constants.ChatServiceResponseConstantMessages.CHAT_WITH_ID_NOT_FOUND;
 
 @Testcontainers
@@ -36,22 +39,18 @@ class ChatControllerIntegrationTest {
 
     @Container
     static MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:latest"));
+    private final UUID testParticipant1 = UUID.randomUUID();
+    private final UUID testParticipant2 = UUID.randomUUID();
+    @LocalServerPort
+    private int port;
+    @Autowired
+    private ChatRepository chatRepository;
+    private String createdChatId;
 
     @DynamicPropertySource
     static void mongoProps(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
     }
-
-    @LocalServerPort
-    private int port;
-
-    @Autowired
-    private ChatRepository chatRepository;
-
-    private final UUID testParticipant1 = UUID.randomUUID();
-    private final UUID testParticipant2 = UUID.randomUUID();
-
-    private String createdChatId;
 
     @BeforeEach
     void setup() {
@@ -194,13 +193,13 @@ class ChatControllerIntegrationTest {
     @Test
     void sendMessage_NullSender_ReturnsBadRequest() {
         String json = """
-            {
-              "content": "Hello",
-              "sender": null,
-              "receiver": "%s",
-              "chatId": "%s"
-            }
-            """.formatted(testParticipant2, "507f1f77bcf86cd799439011");
+                {
+                  "content": "Hello",
+                  "sender": null,
+                  "receiver": "%s",
+                  "chatId": "%s"
+                }
+                """.formatted(testParticipant2, "507f1f77bcf86cd799439011");
 
         given()
                 .contentType(ContentType.JSON)
@@ -218,7 +217,7 @@ class ChatControllerIntegrationTest {
                 .queryParam("page_number", 0)
                 .queryParam("size", 10)
                 .when()
-                .get("/api/v1/chats/"+new ObjectId().toHexString()+"/messages")
+                .get("/api/v1/chats/" + new ObjectId().toHexString() + "/messages")
                 .then()
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .body("message", equalTo(CHAT_WITH_ID_NOT_FOUND));

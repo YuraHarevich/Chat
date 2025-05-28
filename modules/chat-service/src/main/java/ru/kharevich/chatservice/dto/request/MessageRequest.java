@@ -3,9 +3,7 @@ package ru.kharevich.chatservice.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
-import ru.kharevich.chatservice.model.MessageStatus;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record MessageRequest(

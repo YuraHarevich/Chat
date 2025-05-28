@@ -10,7 +10,7 @@ import ru.kharevich.chatservice.dto.response.PageableResponse;
         componentModel = MappingConstants.ComponentModel.SPRING,
         injectionStrategy = InjectionStrategy.CONSTRUCTOR
 )
-public interface PageMapper{
+public interface PageMapper {
 
     default <T> PageableResponse<T> toResponse(Page<T> page) {
         return new PageableResponse(

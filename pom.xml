@@ -10,6 +10,7 @@
 
   <modules>
     <module>modules/chat-service</module>
+    <module>modules/discovery-service</module>
   </modules>
 
   <properties>
@@ -19,15 +20,4 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>3.5.0</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 </project>
