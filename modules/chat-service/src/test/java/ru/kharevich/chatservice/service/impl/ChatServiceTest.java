@@ -24,6 +24,7 @@ import ru.kharevich.chatservice.utils.fabrics.TestDataFactory;
 import ru.kharevich.chatservice.utils.mapper.ChatMapper;
 import ru.kharevich.chatservice.utils.mapper.MessageMapper;
 import ru.kharevich.chatservice.utils.mapper.PageMapper;
+import ru.kharevich.chatservice.utils.validation.ChatServiceValidationService;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +53,8 @@ class ChatServiceTest {
 
     @Mock
     private MessageMapper messageMapper;
+    @Mock
+    private ChatServiceValidationService chatServiceValidationService;
 
     @InjectMocks
     private ChatServiceImpl chatService;

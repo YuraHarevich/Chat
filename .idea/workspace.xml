@@ -5,8 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4198adc2-0c39-4c08-b873-d5496f0f9a4b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/repository/ChatRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/utils/mapper/ChatMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/utils/mapper/MessageMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/utils/mapper/PageMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/ChatServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/ChatServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/${project.build.directory}/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/modules/chat-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/Chat.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/Chat.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/Message.java" beforeDir="false" afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/Message.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,9 +33,9 @@
         <option value="Record" />
         <option value="Exception" />
         <option value="JUnit5 Test Class" />
-        <option value="Class" />
         <option value="Enum" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -112,7 +120,7 @@
       <recent name="ru.kharevich.chatservice.service.impl" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.ChatControllerIntegrationTest">
+  <component name="RunManager" selected="JUnit.ChatServiceTest">
     <configuration name="ChatControllerIntegrationTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="chat-service" />
       <extension name="coverage">
@@ -168,9 +176,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.ChatServiceTest" />
         <item itemvalue="JUnit.ChatControllerIntegrationTest" />
         <item itemvalue="JUnit.ChatControllerIntegrationTest.getMessagesByChatId_NonExistingChat_ReturnsNotFound" />
-        <item itemvalue="JUnit.ChatServiceTest" />
       </list>
     </recent_temporary>
   </component>

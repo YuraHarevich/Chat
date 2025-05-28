@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -15,6 +15,7 @@ import java.util.UUID;
 @Document("messages")
 @Getter
 @Setter
+@CompoundIndex(def = "{'chat_id': 1, 'sentTime': -1}") // Для быстрого поиска
 public class Message {
 
     @Id
@@ -23,9 +24,9 @@ public class Message {
     @Field("content")
     private String content;
 
-    @Field("timestamp")
+    @Field("sentTime")
     @CreatedDate
-    private LocalDateTime timestamp;
+    private LocalDateTime sentTime;
 
     @Field("sender")
     private UUID sender;
@@ -37,7 +38,6 @@ public class Message {
     private MessageStatus status;
 
     @Field("chat_id")
-    @DBRef(db = "chats")
     private ObjectId chatId;
 
 }

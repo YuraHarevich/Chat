@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Document("chats")
@@ -19,11 +20,8 @@ public class Chat {
     @Id
     private ObjectId id;
 
-    @Field("first_person")
-    private UUID firstPerson;
-
-    @Field("second_person")
-    private UUID secondPerson;
+    @Field("participants")
+    private Set<UUID> participants;
 
     @Field("creation_time")
     @CreatedDate
