@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4198adc2-0c39-4c08-b873-d5496f0f9a4b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/amplicode-jpa.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/amplicode-settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/dto/request/MessageRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/dto/response/ChatResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/Chat.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/Message.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/model/MessageStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/ChatServiceApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/chat-service/src/test/java/ru/kharevich/chatservice/ChatServiceApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="com.haulmont.ampjpb.JpaRepository" />
+        <option value="com.haulmont.ampsbb.Component" />
+        <option value="SpringRestController" />
+        <option value="Record" />
+        <option value="Class" />
+        <option value="Interface" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GradleModuleStateConfig" initialized="true" />
+  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
+  <component name="KubernetesApiProvider"><![CDATA[{
+  "isMigrated": true
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 1
+}]]></component>
+  <component name="ProjectId" id="2xgAjYGwkLPO9pFN7YJxggJGHtk" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.Backend [clean].executor": "Run",
+    "Maven.Backend [compile].executor": "Run",
+    "Maven.Backend [validate].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.ChatServiceApplication.executor": "Debug",
+    "git-widget-placeholder": "feat/chat__service",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/juare/Documents/Chat/project/Backend/modules/chat-service/src/main/java/ru/kharevich/chatservice",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mongo"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\juare\Documents\Chat\project\Backend\modules\chat-service\src\main\java\ru\kharevich\chatservice" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="ChatServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="chat-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="ru.kharevich.chatservice.ChatServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.109" />
+        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.109" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4198adc2-0c39-4c08-b873-d5496f0f9a4b" name="Changes" comment="" />
+      <created>1748349479181</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748349479181</updated>
+      <workItem from="1748349480616" duration="13025000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/service/impl/ChatServiceImpl.java</url>
+          <line>43</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/modules/chat-service/src/main/java/ru/kharevich/chatservice/service/impl/ChatServiceImpl.java</url>
+          <line>66</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
