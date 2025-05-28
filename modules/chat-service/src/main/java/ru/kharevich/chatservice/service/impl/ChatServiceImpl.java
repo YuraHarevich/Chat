@@ -7,14 +7,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.kharevich.chatservice.dto.request.ChatRequest;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
-import ru.kharevich.chatservice.dto.response.MessageResponse;
 import ru.kharevich.chatservice.dto.response.ChatResponse;
+import ru.kharevich.chatservice.dto.response.MessageResponse;
 import ru.kharevich.chatservice.dto.response.PageableResponse;
 import ru.kharevich.chatservice.exception.ChatNotFoundException;
+import ru.kharevich.chatservice.model.Chat;
 import ru.kharevich.chatservice.model.Message;
 import ru.kharevich.chatservice.model.MessageStatus;
 import ru.kharevich.chatservice.repository.ChatRepository;
-import ru.kharevich.chatservice.model.Chat;
 import ru.kharevich.chatservice.repository.MessageRepository;
 import ru.kharevich.chatservice.service.ChatService;
 import ru.kharevich.chatservice.utils.mapper.ChatMapper;
@@ -62,7 +62,7 @@ public class ChatServiceImpl implements ChatService {
     public PageableResponse<MessageResponse> getMessagesByChatId(int size, int pageNumber, ObjectId chatId) {
         chatServiceValidationService.validateIfThrowsChatNotFound(chatId);
 
-        Page<Message> messagePage = messageRepository.findByChatIdOrderBySentTimeDesc(chatId, PageRequest.of(pageNumber,size));
+        Page<Message> messagePage = messageRepository.findByChatIdOrderBySentTimeDesc(chatId, PageRequest.of(pageNumber, size));
         Page<MessageResponse> convertedToResponseMessagePage = messagePage.map(messageMapper::toResponse);
         return pageMapper.toResponse(convertedToResponseMessagePage);
     }

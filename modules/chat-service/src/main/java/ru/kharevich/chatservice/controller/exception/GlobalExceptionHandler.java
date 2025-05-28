@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({
-        ChatNotFoundException.class
+            ChatNotFoundException.class
     })
     public ResponseEntity<ErrorMessage> handle(Exception exception) {
         return ResponseEntity

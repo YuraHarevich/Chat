@@ -1,7 +1,6 @@
 package ru.kharevich.chatservice.utils.validation;
 
 import org.bson.types.ObjectId;
-import org.springframework.stereotype.Service;
 
 import java.util.Set;
 import java.util.UUID;

@@ -1,10 +1,10 @@
-package ru.kharevich.chatservice;
+package ru.kharevich.discoveryservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ChatServiceApplicationTests {
+class DiscoveryServiceApplicationTests {
 
     @Test
     void contextLoads() {

@@ -2,7 +2,7 @@ package ru.kharevich.chatservice.dto.response;
 
 import java.util.List;
 
-public record PageableResponse<T> (
+public record PageableResponse<T>(
 
         long totalElements,
 
