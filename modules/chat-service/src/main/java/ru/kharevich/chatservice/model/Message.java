@@ -31,9 +31,6 @@ public class Message {
     @Field("sender")
     private UUID sender;
 
-    @Field("receiver")
-    private UUID receiver;
-
     @Field("status")
     private MessageStatus status;
 

@@ -2,7 +2,6 @@ package ru.kharevich.chatservice.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.bson.types.ObjectId;
 
 import java.util.UUID;
 
@@ -14,11 +13,11 @@ public record MessageRequest(
         @NotNull(message = "Sender ID must not be null")
         UUID sender,
 
-        @NotNull(message = "Receiver ID must not be null")
-        UUID receiver,
+        @NotNull(message = "Shared Chat ID must not be null")
+        UUID sharedId,
 
-        @NotNull(message = "Chat ID must not be null")
-        ObjectId chatId
+        @NotNull(message = "Owner ID must not be null")
+        UUID owner
 
 ) {
 }

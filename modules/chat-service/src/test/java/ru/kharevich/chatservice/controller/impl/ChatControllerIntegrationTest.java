@@ -24,12 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static ru.kharevich.chatservice.utils.constants.ChatServiceResponseConstantMessages.CHAT_WITH_ID_NOT_FOUND;
 
 @Testcontainers
@@ -41,6 +36,9 @@ class ChatControllerIntegrationTest {
     static MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:latest"));
     private final UUID testParticipant1 = UUID.randomUUID();
     private final UUID testParticipant2 = UUID.randomUUID();
+    private final UUID testOwner = UUID.randomUUID();
+    private final UUID testSharedId = UUID.randomUUID();
+
     @LocalServerPort
     private int port;
     @Autowired
@@ -58,67 +56,25 @@ class ChatControllerIntegrationTest {
         RestAssured.port = port;
     }
 
-    @Test
-    void getAllChats_InvalidPageNumber_ReturnsBadRequest() {
-        given()
-                .queryParam("page_number", -1)
-                .queryParam("size", 10)
-                .when()
-                .get("/api/v1/chats")
-                .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    void getAllChats_InvalidSize_ReturnsBadRequest() {
-        given()
-                .queryParam("page_number", 0)
-                .queryParam("size", 0)
-                .when()
-                .get("/api/v1/chats")
-                .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body("message", containsString("size must be greater than 1"));
-    }
-
-    @Test
-    void getMessagesByChatId_InvalidChatIdFormat_ReturnsBadRequest() {
-        given()
-                .queryParam("page_number", 0)
-                .queryParam("size", 10)
-                .when()
-                .get("/api/v1/chats/invalid_id/messages")
-                .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    void getMessagesByChatId_NegativePageNumber_ReturnsBadRequest() {
-        given()
-                .queryParam("page_number", -1)
-                .queryParam("size", 10)
-                .when()
-                .get("/api/v1/chats/507f1f77bcf86cd799439011/messages")
-                .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
+    // Тесты для создания чата
     @Test
     void createChat_ValidRequest_ReturnsCreated() {
-        ChatRequest request = new ChatRequest(Set.of(testParticipant1, testParticipant2));
+        ChatRequest request = new ChatRequest(
+                Set.of(testParticipant1, testParticipant2)
+        );
 
-        createdChatId =
-                given()
-                        .contentType(ContentType.JSON)
-                        .body(request)
-                        .when()
-                        .post("/api/v1/chats")
-                        .then()
-                        .statusCode(HttpStatus.OK.value())
-                        .body("participants", hasSize(2))
-                        .body("id", notNullValue())
-                        .extract()
-                        .path("id");
+        createdChatId = given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/v1/chats")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("participants", hasSize(2))
+                .body("sharedId", notNullValue())
+                .body("id", notNullValue())
+                .extract()
+                .path("id");
     }
 
     @Test
@@ -132,7 +88,7 @@ class ChatControllerIntegrationTest {
                 .post("/api/v1/chats")
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body("message", not(emptyString()));
+                .body("message", containsString("There must be at least 2 participants"));
     }
 
     @Test
@@ -146,106 +102,242 @@ class ChatControllerIntegrationTest {
                 .post("/api/v1/chats")
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body("message", not(emptyString()));
+                .body("message", containsString("Participants cannot be null"));
     }
 
+    // Тесты для отправки сообщений
     @Test
     void sendMessage_ValidRequest_ReturnsOk() {
-        ChatRequest chatRequest = new ChatRequest(Set.of(testParticipant1, testParticipant2));
-        String chatId =
-                given()
-                        .contentType(ContentType.JSON)
-                        .body(chatRequest)
-                        .when()
-                        .post("/api/v1/chats")
-                        .then()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .path("id");
+        // Сначала создаем чат
+        ChatRequest chatRequest = new ChatRequest(
+                Set.of(testParticipant1, testParticipant2)
+        );
+        String chatId = given()
+                .contentType(ContentType.JSON)
+                .body(chatRequest)
+                .when()
+                .post("/api/v1/chats")
+                .then()
+                .extract()
+                .path("id");
 
-        MessageRequest messageRequest = new MessageRequest("Hello", testParticipant1, testParticipant2, new ObjectId(chatId));
+        UUID sharedId = UUID.fromString(
+            given()
+                .when()
+                .get("/api/v1/chats/" + chatId)
+                .then()
+                .extract()
+                .path("sharedId"));
+
+        // Затем отправляем сообщение
+        MessageRequest messageRequest = new MessageRequest(
+                "Hello",
+                testParticipant1,
+                sharedId,
+                testOwner
+        );
 
         given()
                 .contentType(ContentType.JSON)
                 .body(messageRequest)
                 .when()
-                .post("/api/v1/chats/" + chatId + "/send")
+                .post("/api/v1/chats/send-message")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("id", notNullValue())
-                .body("content", equalTo("Hello"));
+                .body("content", equalTo("Hello"))
+                .body("sender", equalTo(testParticipant1.toString()));
     }
 
     @Test
     void sendMessage_EmptyContent_ReturnsBadRequest() {
-        MessageRequest messageRequest = new MessageRequest("", testParticipant1, testParticipant2, new ObjectId("507f1f77bcf86cd799439011"));
+        MessageRequest messageRequest = new MessageRequest(
+                "",
+                testParticipant1,
+                testSharedId,
+                testOwner
+        );
 
         given()
                 .contentType(ContentType.JSON)
                 .body(messageRequest)
                 .when()
-                .post("/api/v1/chats/507f1f77bcf86cd799439011/send")
+                .post("/api/v1/chats/send-message")
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body("message", not(emptyString()));
+                .body("message", containsString("Message content must not be blank"));
     }
 
     @Test
     void sendMessage_NullSender_ReturnsBadRequest() {
-        String json = """
+        String invalidJson = """
                 {
                   "content": "Hello",
                   "sender": null,
-                  "receiver": "%s",
-                  "chatId": "%s"
+                  "sharedId": "%s",
+                  "owner": "%s"
                 }
-                """.formatted(testParticipant2, "507f1f77bcf86cd799439011");
+                """.formatted(testSharedId, testOwner);
 
         given()
                 .contentType(ContentType.JSON)
-                .body(json)
+                .body(invalidJson)
                 .when()
-                .post("/api/v1/chats/507f1f77bcf86cd799439011/send")
+                .post("/api/v1/chats/send-message")
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .body("message", not(emptyString()));
+                .body("message", containsString("Sender ID must not be null"));
+    }
+
+    // Тесты для получения чатов
+    @Test
+    void getChatByUniqueId_ExistingChat_ReturnsChat() {
+        // Создаем чат
+        ChatRequest request = new ChatRequest(Set.of(testParticipant1, testParticipant2));
+        String chatId = given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/api/v1/chats")
+                .then()
+                .extract()
+                .path("id");
+
+        // Получаем чат
+        given()
+                .when()
+                .get("/api/v1/chats/" + chatId)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("id", equalTo(chatId))
+                .body("participants", hasSize(2));
     }
 
     @Test
-    void getMessagesByChatId_NonExistingChat_ReturnsNotFound() {
+    void getChatByUniqueId_NonExistingChat_ReturnsNotFound() {
+        String id = new ObjectId().toHexString();
+        given()
+                .when()
+                .get("/api/v1/chats/" + id)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body("message", equalTo(CHAT_WITH_ID_NOT_FOUND.formatted(id)));
+    }
+
+    // Тесты для получения сообщений
+    @Test
+    void getMessagesByUniqueChatId_ExistingChat_ReturnsMessages() {
+        // Создаем чат
+        ChatRequest chatRequest = new ChatRequest(Set.of(testParticipant1, testParticipant2));
+        String chatId = given()
+                .contentType(ContentType.JSON)
+                .body(chatRequest)
+                .when()
+                .post("/api/v1/chats")
+                .then()
+                .extract()
+                .path("id");
+
+        // Отправляем сообщение
+        UUID sharedId = given()
+                .when()
+                .get("/api/v1/chats/" + chatId)
+                .then()
+                .extract()
+                .path("sharedId");
+
+        MessageRequest messageRequest = new MessageRequest(
+                "Test message",
+                testParticipant1,
+                sharedId,
+                testOwner
+        );
+        given()
+                .contentType(ContentType.JSON)
+                .body(messageRequest)
+                .when()
+                .post("/api/v1/chats/send-message");
+
+        // Получаем сообщения
         given()
                 .queryParam("page_number", 0)
                 .queryParam("size", 10)
                 .when()
-                .get("/api/v1/chats/" + new ObjectId().toHexString() + "/messages")
+                .get("/api/v1/chats/" + chatId + "/messages")
                 .then()
-                .statusCode(HttpStatus.NOT_FOUND.value())
-                .body("message", equalTo(CHAT_WITH_ID_NOT_FOUND));
+                .statusCode(HttpStatus.OK.value())
+                .body("content", hasSize(1))
+                .body("content[0].content", equalTo("Test message"));
     }
 
     @Test
-    void sendMessage_InvalidJson_ReturnsBadRequest() {
-        String invalidJson = "{invalid}";
-
-        given()
+    void getMessagesBySharedChatIdAndOwnerId_ValidRequest_ReturnsMessages() {
+        // Создаем чат
+        ChatRequest chatRequest = new ChatRequest(Set.of(testParticipant1, testParticipant2));
+        String chatId = given()
                 .contentType(ContentType.JSON)
-                .body(invalidJson)
-                .when()
-                .post("/api/v1/chats/507f1f77bcf86cd799439011/send")
-                .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    void createChat_InvalidJson_ReturnsBadRequest() {
-        String invalidJson = "{participants: [invalid]}";
-
-        given()
-                .contentType(ContentType.JSON)
-                .body(invalidJson)
+                .body(chatRequest)
                 .when()
                 .post("/api/v1/chats")
                 .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .extract()
+                .path("id");
+
+        // Получаем sharedId
+        UUID sharedId = given()
+                .when()
+                .get("/api/v1/chats/" + chatId)
+                .then()
+                .extract()
+                .path("sharedId");
+
+        // Отправляем сообщение
+        MessageRequest messageRequest = new MessageRequest(
+                "Shared message",
+                testParticipant1,
+                sharedId,
+                testOwner
+        );
+        given()
+                .contentType(ContentType.JSON)
+                .body(messageRequest)
+                .when()
+                .post("/api/v1/chats/send-message");
+
+        // Получаем сообщения по sharedId и ownerId
+        given()
+                .queryParam("page_number", 0)
+                .queryParam("size", 10)
+                .when()
+                .get("/api/v1/chats/" + chatId + "/" + testOwner + "/messages")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("content", hasSize(1))
+                .body("content[0].content", equalTo("Shared message"));
+    }
+
+    // Тесты валидации параметров запроса
+    @Test
+    void getAllChats_InvalidPageNumber_ReturnsBadRequest() {
+        given()
+                .queryParam("page_number", -1)
+                .queryParam("size", 10)
+                .when()
+                .get("/api/v1/chats")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("message", containsString("page number must be greater than 0"));
+    }
+
+    @Test
+    void getMessages_InvalidSize_ReturnsBadRequest() {
+        given()
+                .queryParam("page_number", 0)
+                .queryParam("size", 0)
+                .when()
+                .get("/api/v1/chats/507f1f77bcf86cd799439011/messages")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("message", containsString("size must be greater than 1"));
     }
 }

@@ -20,8 +20,14 @@ public class Chat {
     @Id
     private ObjectId id;
 
+    @Field("shared_id")
+    private UUID sharedId;
+
     @Field("participants")
     private Set<UUID> participants;
+
+    @Field("owner")
+    private UUID owner;
 
     @Field("creation_time")
     @CreatedDate

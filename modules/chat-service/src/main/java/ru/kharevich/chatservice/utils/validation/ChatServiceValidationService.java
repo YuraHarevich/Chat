@@ -9,6 +9,8 @@ public interface ChatServiceValidationService {
 
     void validateIfThrowsUsersNotFound(Set<UUID> participants);
 
-    void validateIfThrowsChatNotFound(ObjectId chatId);
+    void validateIfThrowsChatNotFoundByChatId(ObjectId chatId);
+
+    void validateIfThrowsChatNotFoundBySharedChatId(UUID sharedChatId);
 
 }

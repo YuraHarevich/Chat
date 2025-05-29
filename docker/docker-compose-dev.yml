@@ -17,5 +17,65 @@ services:
       timeout: 5s
       start_period: 10s
       retries: 5
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:2181"
+    networks:
+      - microservices-net
+
+  kafka:
+    container_name: ms_kafka
+    image: confluentinc/cp-kafka:latest
+    ports:
+      - "9092:9092"  # Внешний порт для подключения с хоста
+      - "9093:9093"  # Дополнительный порт для внутренних подключений
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://ms_kafka:9093,EXTERNAL://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    networks:
+      - microservices-net
+
+  kafka_ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    restart: "no"
+    ports:
+      - "8989:8180"
+    environment:
+      SERVER_PORT: 8180
+      DYNAMIC_CONFIG_ENABLED: "true"
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: ms_kafka:9093
+    networks:
+      - microservices-net
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8180/actuator/health || exit -1
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
+    depends_on:
+      - kafka
+      - zookeeper
+
+
+networks:
+  microservices-net:
+    driver: bridge
+
 volumes:
   mongo_ms_data:
