@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.kharevich.chatservice.dto.other.MessageTransferEntity;
 import ru.kharevich.chatservice.dto.request.ChatRequest;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
 import ru.kharevich.chatservice.dto.response.ChatResponse;
@@ -66,14 +67,15 @@ public class ChatServiceImpl implements ChatService {
 
         UUID chatSharedId = UUID.randomUUID();
         chat.setSharedId(chatSharedId);
-
-        for(UUID participant: chatRequest.participants()){
+        Chat individualChat = null;
+        for (UUID participant : chatRequest.participants()) {
             //saving chat instance for each participant
-            chat.setOwner(participant);
-            chatRepository.save(chat);
+            individualChat = chat.clone();
+            individualChat.setOwner(participant);
+            chatRepository.save(individualChat);
         }
 
-        return chatMapper.toResponse(chat);
+        return chatMapper.toResponse(individualChat);
     }
 
     public PageableResponse<MessageResponse> getMessagesByUniqueChatId(int size, int pageNumber, ObjectId chatId) {
@@ -84,8 +86,10 @@ public class ChatServiceImpl implements ChatService {
         return pageMapper.toResponse(convertedToResponseMessagePage);
     }
 
-    public PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(int size, int pageNumber, ObjectId chatId, UUID ownerId) {
-        chatServiceValidationService.validateIfThrowsChatNotFoundByChatId(chatId);
+    public PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(int size, int pageNumber, UUID sharedChatId, UUID ownerId) {
+        chatServiceValidationService.validateIfThrowsChatNotFoundBySharedChatId(sharedChatId);
+
+        ObjectId chatId = chatRepository.findBySharedIdAndOwner(sharedChatId, ownerId).get().getId();
 
         Page<Message> messagePage = messageRepository.findByChatIdOrderBySentTimeDesc(chatId, PageRequest.of(pageNumber, size));
         Page<MessageResponse> convertedToResponseMessagePage = messagePage.map(messageMapper::toResponse);
@@ -96,12 +100,13 @@ public class ChatServiceImpl implements ChatService {
         chatServiceValidationService.validateIfThrowsChatNotFoundBySharedChatId(messageRequest.sharedId());
         chatServiceValidationService.validateIfThrowsUsersNotFound(Set.of(messageRequest.sender()));
 
-        ObjectId chatId = chatRepository.findBySharedIdAndOwner(messageRequest.sharedId(),messageRequest.owner()).getId();
+        ObjectId chatId = chatRepository.findBySharedIdAndOwner(messageRequest.sharedId(), messageRequest.sender()).get().getId();
 
         Message msg = messageMapper.toEntity(messageRequest, chatId);
         msg.setStatus(SENT);
         messageRepository.save(msg);
-        messageEntityMessageProducer.sendOrderRequest(messageRequest);
+        messageEntityMessageProducer.sendOrderRequest(
+                new MessageTransferEntity(msg.getChatId().toHexString(), msg.getId().toHexString()));
         return messageMapper.toResponse(msg);
     }
 

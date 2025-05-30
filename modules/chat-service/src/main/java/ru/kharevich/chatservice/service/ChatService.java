@@ -20,5 +20,5 @@ public interface ChatService {
 
     PageableResponse<MessageResponse> getMessagesByUniqueChatId(int size, int pageNumber, ObjectId chatId);
 
-    PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(int size, int pageNumber, ObjectId chatId, UUID ownerId);
+    PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(int size, int pageNumber, UUID sharedChatId, UUID ownerId);
 }

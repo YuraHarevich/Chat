@@ -72,6 +72,60 @@ services:
       - kafka
       - zookeeper
 
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:latest
+    container_name: victoria-metrics
+    ports:
+      - "8428:8428"
+    volumes:
+      - ../log-directory/victoria-metrics/promscrape.yml:/victoria-metrics/promscrape.yml
+    networks:
+      - microservices-net
+    command:
+      - '--promscrape.config=/victoria-metrics/promscrape.yml'
+      - '--promscrape.config.strictParse=false'
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    container_name: grafana
+    volumes:
+      - ../log-directory/grafana:/var/lib/grafana
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    ports:
+      - "3000:3000"
+    networks:
+      - microservices-net
+
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: loki
+    volumes:
+      - ../log-directory/loki:/etc/loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/loki-config.yml
+    networks:
+      - microservices-net
+
+  tempo:
+    container_name: tempo
+    image: grafana/tempo:2.6.0
+    command: [ "-config.file=/etc/tempo-config.yml" ]
+    volumes:
+      - ../log-directory/tempo/tempo-config.yml:/etc/tempo-config.yml
+    ports:
+      - "14268:14268"
+      - "3200:3200"
+      - "55680:55680"
+      - "55681:55681"
+      - "9411:9411"
+      - "4318:4318"
+      - "4317:4317"
+    networks:
+      - microservices-net
+
 
 networks:
   microservices-net:

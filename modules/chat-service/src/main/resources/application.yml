@@ -17,14 +17,35 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       observation-enabled: true
       properties:
-        spring.json.type.mapping: messageRequest:ru.kharevich.chatservice.dto.request.MessageRequest
+        spring.json.type.mapping: messageTransferEntity:ru.kharevich.chatservice.dto.other.MessageTransferEntity
     consumer:
       bootstrap-servers: localhost:9092
-      group-id: order-group
+      group-id: message-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       observation-enabled: true
       properties:
         spring.json.trusted.packages: '*'
-        spring.json.type.mapping: messageRequest:ru.kharevich.chatservice.dto.request.MessageRequest
+        spring.json.type.mapping: messageTransferEntity:ru.kharevich.chatservice.dto.other.MessageTransferEntity
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    tags:
+      application: chat-service
+  zipkin:
+    tracing:
+      endpoint: ${TEMPO_ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+  tracing:
+    sampling:
+      probability: 1.0

@@ -8,6 +8,7 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+import ru.kharevich.chatservice.dto.other.MessageTransferEntity;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
 
 @Service
@@ -15,15 +16,15 @@ import ru.kharevich.chatservice.dto.request.MessageRequest;
 @Slf4j
 public class MessageEntityMessageProducer {
 
-    private final KafkaTemplate<String, MessageRequest> kafkaTemplate;
+    private final KafkaTemplate<String, MessageTransferEntity> kafkaTemplate;
 
     @Value("${spring.kafka.topic.message}")
     private String topic;
 
-    public void sendOrderRequest(MessageRequest msgRequest){
+    public void sendOrderRequest(MessageTransferEntity msg){
         log.info("MessageEntityMessageProducer.Sending message from sender");
-        Message<MessageRequest> message = MessageBuilder
-                .withPayload(msgRequest)
+        Message<MessageTransferEntity> message = MessageBuilder
+                .withPayload(msg)
                 .setHeader(KafkaHeaders.TOPIC,topic)
                 .build();
         kafkaTemplate.send(message);

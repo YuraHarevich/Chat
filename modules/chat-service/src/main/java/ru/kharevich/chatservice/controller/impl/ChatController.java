@@ -38,14 +38,14 @@ public class ChatController implements ChatApi {
         return chats;
     }
 
-    @GetMapping("{chatId}/{ownerId}/messages")
+    @GetMapping("{sharedChatId}/{ownerId}/messages")
     public PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(@RequestParam(defaultValue = "0")
                                                                            @Min(value = 0, message = "page number must be greater than 0") int page_number,
                                                                            @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size,
-                                                                           @PathVariable @Valid ObjectId chatId,
+                                                                           @PathVariable @Valid UUID sharedChatId,
                                                                            @PathVariable @Valid UUID ownerId) {
         size = size > 50 ? 50 : size;
-        PageableResponse<MessageResponse> chats = chatService.getMessagesBySharedChatIdAndOwnerId(size, page_number, chatId, ownerId);
+        PageableResponse<MessageResponse> chats = chatService.getMessagesBySharedChatIdAndOwnerId(size, page_number, sharedChatId, ownerId);
         return chats;
     }
 

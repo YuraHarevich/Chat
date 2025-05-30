@@ -14,10 +14,7 @@ public record MessageRequest(
         UUID sender,
 
         @NotNull(message = "Shared Chat ID must not be null")
-        UUID sharedId,
-
-        @NotNull(message = "Owner ID must not be null")
-        UUID owner
+        UUID sharedId
 
 ) {
 }

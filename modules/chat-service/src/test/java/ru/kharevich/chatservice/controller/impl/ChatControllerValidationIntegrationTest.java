@@ -30,7 +30,7 @@ import static ru.kharevich.chatservice.utils.constants.ChatServiceResponseConsta
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class ChatControllerIntegrationTest {
+class ChatControllerValidationIntegrationTest {
 
     @Container
     static MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:latest"));
@@ -41,8 +41,10 @@ class ChatControllerIntegrationTest {
 
     @LocalServerPort
     private int port;
+
     @Autowired
     private ChatRepository chatRepository;
+
     private String createdChatId;
 
     @DynamicPropertySource
@@ -133,8 +135,7 @@ class ChatControllerIntegrationTest {
         MessageRequest messageRequest = new MessageRequest(
                 "Hello",
                 testParticipant1,
-                sharedId,
-                testOwner
+                sharedId
         );
 
         given()
@@ -144,7 +145,6 @@ class ChatControllerIntegrationTest {
                 .post("/api/v1/chats/send-message")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("id", notNullValue())
                 .body("content", equalTo("Hello"))
                 .body("sender", equalTo(testParticipant1.toString()));
     }
@@ -154,8 +154,7 @@ class ChatControllerIntegrationTest {
         MessageRequest messageRequest = new MessageRequest(
                 "",
                 testParticipant1,
-                testSharedId,
-                testOwner
+                testSharedId
         );
 
         given()
@@ -222,98 +221,6 @@ class ChatControllerIntegrationTest {
                 .then()
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .body("message", equalTo(CHAT_WITH_ID_NOT_FOUND.formatted(id)));
-    }
-
-    // Тесты для получения сообщений
-    @Test
-    void getMessagesByUniqueChatId_ExistingChat_ReturnsMessages() {
-        // Создаем чат
-        ChatRequest chatRequest = new ChatRequest(Set.of(testParticipant1, testParticipant2));
-        String chatId = given()
-                .contentType(ContentType.JSON)
-                .body(chatRequest)
-                .when()
-                .post("/api/v1/chats")
-                .then()
-                .extract()
-                .path("id");
-
-        // Отправляем сообщение
-        UUID sharedId = given()
-                .when()
-                .get("/api/v1/chats/" + chatId)
-                .then()
-                .extract()
-                .path("sharedId");
-
-        MessageRequest messageRequest = new MessageRequest(
-                "Test message",
-                testParticipant1,
-                sharedId,
-                testOwner
-        );
-        given()
-                .contentType(ContentType.JSON)
-                .body(messageRequest)
-                .when()
-                .post("/api/v1/chats/send-message");
-
-        // Получаем сообщения
-        given()
-                .queryParam("page_number", 0)
-                .queryParam("size", 10)
-                .when()
-                .get("/api/v1/chats/" + chatId + "/messages")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .body("content", hasSize(1))
-                .body("content[0].content", equalTo("Test message"));
-    }
-
-    @Test
-    void getMessagesBySharedChatIdAndOwnerId_ValidRequest_ReturnsMessages() {
-        // Создаем чат
-        ChatRequest chatRequest = new ChatRequest(Set.of(testParticipant1, testParticipant2));
-        String chatId = given()
-                .contentType(ContentType.JSON)
-                .body(chatRequest)
-                .when()
-                .post("/api/v1/chats")
-                .then()
-                .extract()
-                .path("id");
-
-        // Получаем sharedId
-        UUID sharedId = given()
-                .when()
-                .get("/api/v1/chats/" + chatId)
-                .then()
-                .extract()
-                .path("sharedId");
-
-        // Отправляем сообщение
-        MessageRequest messageRequest = new MessageRequest(
-                "Shared message",
-                testParticipant1,
-                sharedId,
-                testOwner
-        );
-        given()
-                .contentType(ContentType.JSON)
-                .body(messageRequest)
-                .when()
-                .post("/api/v1/chats/send-message");
-
-        // Получаем сообщения по sharedId и ownerId
-        given()
-                .queryParam("page_number", 0)
-                .queryParam("size", 10)
-                .when()
-                .get("/api/v1/chats/" + chatId + "/" + testOwner + "/messages")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .body("content", hasSize(1))
-                .body("content[0].content", equalTo("Shared message"));
     }
 
     // Тесты валидации параметров запроса

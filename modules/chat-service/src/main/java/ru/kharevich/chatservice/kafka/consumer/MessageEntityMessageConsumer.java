@@ -8,7 +8,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Service;
+import ru.kharevich.chatservice.dto.other.MessageTransferEntity;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
+import ru.kharevich.chatservice.service.SentMessageProcessService;
 
 import java.util.function.Supplier;
 
@@ -17,14 +19,12 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class MessageEntityMessageConsumer {
 
-    @Value("${spring.kafka.topic.message}")
-    private String orderTopic;
-
-    private final KafkaTemplate<String, MessageRequest> kafkaTemplate;
+    private final SentMessageProcessService sentMessageProcessService;
 
     @KafkaListener(topics = "message-topic",groupId = "message-group")
-    public void consumeSupplyRequests(MessageRequest queueProceedRequest) {
+    public void consumeSupplyRequests(MessageTransferEntity msg) {
         log.info("MessageEntityMessageConsumer.Consuming message");
+        sentMessageProcessService.processSentMessage(msg);
     }
 
 }
