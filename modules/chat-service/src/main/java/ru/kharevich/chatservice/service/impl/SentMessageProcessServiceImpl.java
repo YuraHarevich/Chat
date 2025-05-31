@@ -33,6 +33,7 @@ public class SentMessageProcessServiceImpl implements SentMessageProcessService 
 
     @Override
     public void processSentMessage(MessageTransferEntity messageTransferEntity) {
+        log.info("SentMessageProcessServiceImpl.processing message");
         ObjectId chatId = new ObjectId(messageTransferEntity.chatId());
         ObjectId messageId = new ObjectId(messageTransferEntity.messageId());
         UUID sharedId = chatRepository.findById(chatId)

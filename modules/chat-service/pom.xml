@@ -21,6 +21,7 @@
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <rest-assured.version>5.5.1</rest-assured.version>
         <logback.appender.version>1.6.0</logback.appender.version>
+        <kafka.test.containers.version>1.21.1</kafka.test.containers.version>
     </properties>
 
     <dependencies>
@@ -88,6 +89,12 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mongodb</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>kafka</artifactId>
+            <version>${kafka.test.containers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

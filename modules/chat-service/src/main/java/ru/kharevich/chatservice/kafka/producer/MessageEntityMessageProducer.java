@@ -21,37 +21,17 @@ import ru.kharevich.chatservice.dto.request.MessageRequest;
 public class MessageEntityMessageProducer {
 
     private final KafkaTemplate<String, MessageTransferEntity> kafkaTemplate;
-    private final Tracer tracer;
-    private final ObservationRegistry observationRegistry;
 
     @Value("${spring.kafka.topic.message}")
     private String topic;
 
-    public void sendOrderRequest(MessageTransferEntity msg) {
-        Observation.createNotStarted("kafka.produce", observationRegistry)
-                .contextualName("kafka.send.message")
-                .lowCardinalityKeyValue("kafka.topic", topic)
-                .observe(() -> {
-                    Span span = tracer.nextSpan()
-                            .name("kafka.produce.message")
-                            .tag("kafka.topic", topic);
-
-                    try (Tracer.SpanInScope scope = tracer.withSpan(span)) {
-                        span.start();
-
-                        Message<MessageTransferEntity> message = MessageBuilder
-                                .withPayload(msg)
-                                .setHeader(KafkaHeaders.TOPIC, topic)
-                                .setHeader("traceparent", span.context().traceId())
-                                .setHeader("spanId", span.context().spanId())
-                                .build();
-
-                        log.info("Sending message with traceId: {}", span.context().traceId());
-
-                        kafkaTemplate.send(message);
-                    } finally {
-                        span.end();
-                    }
-                });
+    public void sendOrderRequest(MessageTransferEntity msg){
+        log.info("MessageEntityMessageProducer.Sending message from sender");
+        Message<MessageTransferEntity> message = MessageBuilder
+                .withPayload(msg)
+                .setHeader(KafkaHeaders.TOPIC,topic)
+                .build();
+        kafkaTemplate.send(message);
     }
+
 }
