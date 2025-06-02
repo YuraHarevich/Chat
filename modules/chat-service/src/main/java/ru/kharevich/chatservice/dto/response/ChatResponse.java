@@ -7,6 +7,8 @@ public record ChatResponse(
 
         String id,
 
+        UUID sharedId,
+
         Set<UUID> participants
 
 ) {

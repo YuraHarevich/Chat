@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Console Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [traceId=%X{traceId:-NO_TRACE}, spanId=%X{spanId:-NO_SPAN}] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Loki Appender -->
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>${LOKI_URL:-http://localhost:3100}/loki/api/v1/push</url>
+            <connectionTimeout>5000</connectionTimeout>
+            <requestTimeout>10000</requestTimeout>
+        </http>
+        <batch>
+            <maxItems>1000</maxItems>
+            <maxBytes>4194304</maxBytes>
+            <timeout>5</timeout>
+        </batch>
+        <format>
+            <label>
+                <pattern>app=chat-service,host=${HOSTNAME}</pattern>
+            </label>
+            <message>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [traceId=%X{traceId:-NO_TRACE}, spanId=%X{spanId:-NO_SPAN}] %logger{36} - %msg%n</pattern>
+            </message>
+        </format>
+    </appender>
+
+    <!-- Root Logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOKI"/>
+    </root>
+
+</configuration>

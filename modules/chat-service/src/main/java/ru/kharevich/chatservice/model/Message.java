@@ -10,13 +10,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.UUID;
 
 @Document("messages")
 @Getter
 @Setter
 @CompoundIndex(def = "{'chat_id': 1, 'sentTime': -1}") // Для быстрого поиска
-public class Message {
+public class Message implements Cloneable{
 
     @Id
     private ObjectId id;
@@ -31,13 +32,28 @@ public class Message {
     @Field("sender")
     private UUID sender;
 
-    @Field("receiver")
-    private UUID receiver;
-
     @Field("status")
     private MessageStatus status;
 
     @Field("chat_id")
     private ObjectId chatId;
+
+    @Override
+    public Message clone() {
+        try {
+            Message cloned = (Message) super.clone();
+            // Клонируем неизменяемые или копируемые по значению поля
+            cloned.id = null; // ID должен быть null для нового документа
+            cloned.content = this.content != null ? new String(this.content) : null;
+            cloned.sentTime = this.sentTime != null ? LocalDateTime.from(this.sentTime) : null;
+            cloned.sender = this.sender; // UUID — immutable
+            cloned.status = this.status; // enum — immutable
+            cloned.chatId = this.chatId; // ObjectId — mutable, можно клонировать
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("Cloning Message failed", e);
+        }
+    }
+
 
 }

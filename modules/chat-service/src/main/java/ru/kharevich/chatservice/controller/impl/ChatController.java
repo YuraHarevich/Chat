@@ -20,6 +20,8 @@ import ru.kharevich.chatservice.dto.response.MessageResponse;
 import ru.kharevich.chatservice.dto.response.PageableResponse;
 import ru.kharevich.chatservice.service.ChatService;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/chats")
 @RequiredArgsConstructor
@@ -36,19 +38,30 @@ public class ChatController implements ChatApi {
         return chats;
     }
 
-    @GetMapping("{chatId}/messages")
-    public PageableResponse<MessageResponse> getMessagesByChatId(@RequestParam(defaultValue = "0")
-                                                                 @Min(value = 0, message = "page number must be greater than 0") int page_number,
-                                                                 @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size,
-                                                                 @PathVariable @Valid ObjectId chatId) {
+    @GetMapping("{sharedChatId}/{ownerId}/messages")
+    public PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(@RequestParam(defaultValue = "0")
+                                                                           @Min(value = 0, message = "page number must be greater than 0") int page_number,
+                                                                           @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size,
+                                                                           @PathVariable @Valid UUID sharedChatId,
+                                                                           @PathVariable @Valid UUID ownerId) {
         size = size > 50 ? 50 : size;
-        PageableResponse<MessageResponse> chats = chatService.getMessagesByChatId(size, page_number, chatId);
+        PageableResponse<MessageResponse> chats = chatService.getMessagesBySharedChatIdAndOwnerId(size, page_number, sharedChatId, ownerId);
         return chats;
     }
 
-    @GetMapping("/{id}")
-    public ChatResponse getChat(@PathVariable @Valid ObjectId id) {
-        return chatService.getChat(id);
+    @GetMapping("{chatId}/messages")
+    public PageableResponse<MessageResponse> getMessagesByUniqueChatId(@RequestParam(defaultValue = "0")
+                                                                                 @Min(value = 0, message = "page number must be greater than 0") int page_number,
+                                                                                 @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size,
+                                                                                 @PathVariable @Valid ObjectId chatId) {
+        size = size > 50 ? 50 : size;
+        PageableResponse<MessageResponse> chats = chatService.getMessagesByUniqueChatId(size, page_number, chatId);
+        return chats;
+    }
+
+    @GetMapping("{chatId}")
+    public ChatResponse getChatByUniqueId(@PathVariable @Valid ObjectId chatId) {
+        return chatService.getChat(chatId);
     }
 
     @PostMapping
@@ -56,9 +69,9 @@ public class ChatController implements ChatApi {
         return chatService.createChat(chat);
     }
 
-    @PostMapping("{chatId}/send")
-    public MessageResponse sendMessage(@PathVariable @Valid ObjectId chatId, @RequestBody @Valid MessageRequest messageRequest) {
-        return chatService.sendMessage(chatId, messageRequest);
+    @PostMapping("/send-message")
+    public MessageResponse sendMessage(@RequestBody @Valid MessageRequest messageRequest) {
+        return chatService.sendMessage(messageRequest);
     }
 
 }

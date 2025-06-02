@@ -12,8 +12,6 @@ public record MessageResponse(
 
         UUID sender,
 
-        UUID receiver,
-
         ObjectId chatId
 
 ) {

@@ -24,8 +24,14 @@ public class ChatServiceValidationServiceImpl implements ChatServiceValidationSe
     }
 
     @Override
-    public void validateIfThrowsChatNotFound(ObjectId chatId) {
-        chatRepository.findById(chatId).orElseThrow(() -> new ChatNotFoundException(CHAT_WITH_ID_NOT_FOUND));
+    public void validateIfThrowsChatNotFoundByChatId(ObjectId chatId) {
+        chatRepository.findById(chatId).orElseThrow(() -> new ChatNotFoundException(CHAT_WITH_ID_NOT_FOUND.formatted(chatId)));
+    }
+
+    @Override
+    public void validateIfThrowsChatNotFoundBySharedChatId(UUID sharedChatId) {
+        if(chatRepository.findBySharedId(sharedChatId).isEmpty())
+            throw new ChatNotFoundException(CHAT_WITH_ID_NOT_FOUND.formatted(sharedChatId));
     }
 
 }

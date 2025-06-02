@@ -6,6 +6,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import ru.kharevich.chatservice.model.Chat;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 public interface ChatRepository extends MongoRepository<Chat, ObjectId> {
     Page<Chat> findAll(Pageable pageable);
+
+    List<Chat> findBySharedId(UUID sharedId);
+
+    Optional<Chat> findBySharedIdAndOwner(UUID sharedId, UUID owner);
 }

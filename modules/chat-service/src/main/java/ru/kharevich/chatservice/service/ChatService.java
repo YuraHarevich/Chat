@@ -7,6 +7,8 @@ import ru.kharevich.chatservice.dto.response.ChatResponse;
 import ru.kharevich.chatservice.dto.response.MessageResponse;
 import ru.kharevich.chatservice.dto.response.PageableResponse;
 
+import java.util.UUID;
+
 public interface ChatService {
     PageableResponse<ChatResponse> getAllChats(int size, int pageNumber);
 
@@ -14,7 +16,9 @@ public interface ChatService {
 
     ChatResponse createChat(ChatRequest chat);
 
-    PageableResponse<MessageResponse> getMessagesByChatId(int size, int pageNumber, ObjectId chatId);
+    MessageResponse sendMessage(MessageRequest messageRequest);
 
-    MessageResponse sendMessage(ObjectId chatId, MessageRequest messageRequest);
+    PageableResponse<MessageResponse> getMessagesByUniqueChatId(int size, int pageNumber, ObjectId chatId);
+
+    PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(int size, int pageNumber, UUID sharedChatId, UUID ownerId);
 }
