@@ -1,8 +1,7 @@
 package ru.kharevich.chatservice.kafka.producer;
 
-import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
-import io.micrometer.tracing.Span;
+import io.micrometer.tracing.TraceContext;
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,8 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import ru.kharevich.chatservice.dto.other.MessageTransferEntity;
-import ru.kharevich.chatservice.dto.request.MessageRequest;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,17 +21,43 @@ import ru.kharevich.chatservice.dto.request.MessageRequest;
 public class MessageEntityMessageProducer {
 
     private final KafkaTemplate<String, MessageTransferEntity> kafkaTemplate;
+    private final ObservationRegistry observationRegistry;
 
     @Value("${spring.kafka.topic.message}")
     private String topic;
 
-    public void sendOrderRequest(MessageTransferEntity msg){
-        log.info("MessageEntityMessageProducer.Sending message from sender");
-        Message<MessageTransferEntity> message = MessageBuilder
-                .withPayload(msg)
-                .setHeader(KafkaHeaders.TOPIC,topic)
-                .build();
+    private final Tracer tracer;
+
+    public void sendOrderRequest(MessageTransferEntity msg) {
+        Message<MessageTransferEntity> message = null;
+
+        if(getCurrentTraceparent().isPresent()) {
+            message = MessageBuilder
+                    .withPayload(msg)
+                    .setHeader(KafkaHeaders.TOPIC, topic)
+                    .removeHeader("traceparent")
+                    .setHeader("traceparent", getCurrentTraceparent())
+                    .build();
+        }
+        else {
+            message = MessageBuilder
+                    .withPayload(msg)
+                    .setHeader(KafkaHeaders.TOPIC, topic)
+                    .build();
+        }
+
         kafkaTemplate.send(message);
+
+    }
+
+    private Optional<String> getCurrentTraceparent() {
+        TraceContext context = tracer.currentTraceContext().context();
+        if(context != null) {
+            return Optional.of(String.format("00-%s-%s-00", context.traceId(), context.spanId()));
+        }
+        else {
+            return Optional.empty();
+        }
     }
 
 }
