@@ -126,6 +126,43 @@ services:
     networks:
       - microservices-net
 
+  keycloak:
+    container_name: keycloak-ms
+    image: quay.io/keycloak/keycloak:26.1
+    ports:
+      - 8080:8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL_HOST: user_postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_DATABASE: user_db
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: password
+    command:
+      - "start-dev"
+    depends_on:
+      - user_postgres
+    networks:
+      - microservices-net
+
+  user_postgres:
+    container_name: ms_user_db
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user_db
+      PGDATA: /data/postgres
+    volumes:
+      - user_postgres:/data/postgres
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+    networks:
+      - microservices-net
+
 
 networks:
   microservices-net:
@@ -133,3 +170,4 @@ networks:
 
 volumes:
   mongo_ms_data:
+  user_postgres:

@@ -11,6 +11,7 @@
   <modules>
     <module>modules/chat-service</module>
     <module>modules/discovery-service</module>
+    <module>modules/user-service</module>
   </modules>
 
   <properties>
