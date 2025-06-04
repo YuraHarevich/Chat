@@ -18,6 +18,7 @@
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<resteasy.client.version>6.2.11.Final</resteasy.client.version>
 		<keycloak.admin-client.version>26.0.5</keycloak.admin-client.version>
+		<kafka.test.containers.version>1.21.1</kafka.test.containers.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -91,6 +92,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>

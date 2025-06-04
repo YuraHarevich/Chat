@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.kharevich.userservice.controller.api.UserApi;
+import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.service.UserService;
 import ru.kharevich.userservice.dto.response.UserResponse;
@@ -67,10 +68,10 @@ public class UserController implements UserApi {
         userService.delete(id);
     }
 
-    @PatchMapping("{id}/recover")
+    @PatchMapping("/recover")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public UserResponse recoverAccount(@PathVariable @Valid UUID id) {
-        return userService.recoverTheAccount(id);
+    public UserResponse recoverAccount(@RequestBody @Valid AccountRecoverRequest request) {
+        return userService.recoverTheAccount(request);
     }
 
 }

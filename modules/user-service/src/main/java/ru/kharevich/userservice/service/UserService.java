@@ -3,6 +3,7 @@ package ru.kharevich.userservice.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.dto.response.UserResponse;
 
@@ -22,6 +23,9 @@ public interface UserService {
 
     void delete(UUID id);
 
-    UserResponse recoverTheAccount(UUID id);
+    UserResponse recoverTheAccount(AccountRecoverRequest request);
 
+    void setExternalId(UUID externalId, UUID userId);
+
+    void setExistsStatus(UUID userId);
 }

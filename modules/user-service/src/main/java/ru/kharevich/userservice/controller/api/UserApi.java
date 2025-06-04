@@ -6,6 +6,7 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.dto.response.UserResponse;
 
@@ -24,6 +25,6 @@ public interface UserApi {
 
     public void delete(@PathVariable @Valid UUID id);
 
-    public UserResponse recoverAccount(@PathVariable @Valid UUID id);
+    public UserResponse recoverAccount(@RequestBody @Valid AccountRecoverRequest request);
 
 }
