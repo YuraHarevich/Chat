@@ -24,12 +24,12 @@ app:
     time_of_expiration_of_accounts_in_days: 30
     period_of_user_cleaning_in_millis: 3600000
 
-#keycloak:
-#  domain: localhost
-#  clientId: client-api
-#  clientSecret: BZfd81ImCiMvyNG1yCDj8irt4VDENVUJ
-#  auth-url:  http://${keycloak.domain}:8080
-#  realm: chat-realm
+keycloak:
+  domain: localhost
+  clientId: client-api
+  clientSecret: uy9qYdDPk9CoYakehhGSRED6F9JV0ZKX
+  auth-url:  http://${keycloak.domain}:8080
+  realm: chat-realm
 #
 #management:
 #  endpoints:

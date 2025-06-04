@@ -11,6 +11,7 @@ import ru.kharevich.userservice.dto.response.UserResponse;
 import ru.kharevich.userservice.model.AccountStatus;
 import ru.kharevich.userservice.model.User;
 import ru.kharevich.userservice.repository.UserRepository;
+import ru.kharevich.userservice.service.KeycloakUserService;
 import ru.kharevich.userservice.service.UserService;
 import ru.kharevich.userservice.util.mapper.UserMapper;
 import ru.kharevich.userservice.util.validation.UserValidationService;
@@ -32,6 +33,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserValidationService userValidationService;
 
+    private final KeycloakUserService keycloakUserService;
+
     @Override
     public Page<UserResponse> getAll(int page_number, int size) {
         Page<User> users = userRepository.findByAccountStatus(EXISTS, PageRequest.of(page_number, size));
@@ -48,6 +51,9 @@ public class UserServiceImpl implements UserService {
     public UserResponse create(UserRequest dto) {
         User user = userMapper.toEntity(dto);
         User resultUser = userRepository.save(user);
+
+        keycloakUserService.createUser(dto);
+
         return userMapper.toResponse(resultUser);
     }
 

@@ -15,6 +15,9 @@ public record UserRequest(
         String lastname,
 
         @Email(message = "email is not valid")
-        String email
+        String email,
+
+        String password
+
 ) {
 }

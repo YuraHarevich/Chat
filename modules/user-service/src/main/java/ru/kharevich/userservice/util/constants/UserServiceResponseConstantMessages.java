@@ -14,4 +14,11 @@ public class UserServiceResponseConstantMessages {
 
     public static final String ACCOUNT_STATUS_PARAM_IS_ABSENT = "Account status is absent";
 
+    public static final String USER_REPEATED_DATA_MESSAGE = "User with such email/username already exists";
+
+    public static final String  USER_CREATION_EXCEPTION = "User creation failed";
+
+    public static final String JWT_CONVERT_EXCEPTION_MESSAGE = "JWT conversion failed";
+
+
 }
