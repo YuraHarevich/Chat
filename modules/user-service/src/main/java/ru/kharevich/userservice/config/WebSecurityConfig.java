@@ -42,6 +42,14 @@ public class WebSecurityConfig {
                     "/api/v1/users/**"
             );
             web.ignoring().requestMatchers(
+                    HttpMethod.DELETE,
+                    "/api/v1/users/**"
+            );
+            web.ignoring().requestMatchers(
+                    HttpMethod.PATCH,
+                    "/api/v1/users/**"
+            );
+            web.ignoring().requestMatchers(
                     HttpMethod.POST,
                     "/api/v1/users/login"
             );

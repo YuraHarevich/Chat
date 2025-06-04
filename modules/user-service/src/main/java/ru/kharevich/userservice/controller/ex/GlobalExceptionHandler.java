@@ -8,6 +8,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.kharevich.userservice.dto.other.ErrorMessage;
+import ru.kharevich.userservice.exceptions.EnumStatusConversionException;
+import ru.kharevich.userservice.exceptions.JwtConverterException;
+import ru.kharevich.userservice.exceptions.RepeatedUserDataException;
+import ru.kharevich.userservice.exceptions.UserCreationException;
 import ru.kharevich.userservice.exceptions.UserNotFoundException;
 
 import java.time.LocalDateTime;
@@ -20,9 +24,57 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             UserNotFoundException.class
     })
-    public ResponseEntity<ErrorMessage> handle(Exception exception) {
+    public ResponseEntity<ErrorMessage> handleNotFound(Exception exception) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(ErrorMessage.builder()
+                        .message(exception.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
+
+    @ExceptionHandler({
+            RepeatedUserDataException.class
+    })
+    public ResponseEntity<ErrorMessage> handleConflict(Exception exception) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorMessage.builder()
+                        .message(exception.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
+
+    @ExceptionHandler({
+            EnumStatusConversionException.class,
+    })
+    public ResponseEntity<ErrorMessage> handleBadRequest(Exception exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorMessage.builder()
+                        .message(exception.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
+
+    @ExceptionHandler({
+            JwtConverterException.class
+    })
+    public ResponseEntity<ErrorMessage> handleInternalServerError(Exception exception) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorMessage.builder()
+                        .message(exception.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
+
+    @ExceptionHandler({
+            UserCreationException.class
+    })
+    public ResponseEntity<ErrorMessage> handleServiceUnavailable(Exception exception) {
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(ErrorMessage.builder()
                         .message(exception.getMessage())
                         .timestamp(LocalDateTime.now())

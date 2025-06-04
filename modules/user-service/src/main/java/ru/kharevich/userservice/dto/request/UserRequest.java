@@ -17,6 +17,7 @@ public record UserRequest(
         @Email(message = "email is not valid")
         String email,
 
+        @NotNull(message = "password cannot be null")
         String password
 
 ) {

@@ -16,7 +16,9 @@ public class UserServiceResponseConstantMessages {
 
     public static final String USER_REPEATED_DATA_MESSAGE = "User with such email/username already exists";
 
-    public static final String  USER_CREATION_EXCEPTION = "User creation failed";
+    public static final String USER_CREATION_EXCEPTION_MESSAGE = "User creation failed";
+
+    public static final String USER_CREATION_EXCEPTION_WHILE_REQUEST_MESSAGE = "User creation failed int request phase";
 
     public static final String JWT_CONVERT_EXCEPTION_MESSAGE = "JWT conversion failed";
 

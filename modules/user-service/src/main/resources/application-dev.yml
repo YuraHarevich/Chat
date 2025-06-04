@@ -30,6 +30,7 @@ keycloak:
   clientSecret: uy9qYdDPk9CoYakehhGSRED6F9JV0ZKX
   auth-url:  http://${keycloak.domain}:8080
   realm: chat-realm
+  default-role: USER
 #
 #management:
 #  endpoints:

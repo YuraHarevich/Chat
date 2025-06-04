@@ -49,19 +49,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse create(UserRequest dto) {
+        userValidationService.throwsRepeatedUserDataExceptionForCreation(dto);
         User user = userMapper.toEntity(dto);
-        User resultUser = userRepository.save(user);
+        UUID externalId = keycloakUserService.createUser(dto);
+        user.setExternalId(externalId);
+        userRepository.saveAndFlush(user);
 
-        keycloakUserService.createUser(dto);
-
-        return userMapper.toResponse(resultUser);
+        return userMapper.toResponse(user);
     }
 
     @Override
     public UserResponse update(UUID id, UserRequest request) {
+        userValidationService.throwsRepeatedUserDataExceptionForUpdate(request, id);
         User user = userValidationService.throwsUserNotFoundException(id);
         userMapper.updateUserByRequest(request, user);
         User resultUser = userRepository.save(user);
+
+        keycloakUserService.updateUser(resultUser.getExternalId().toString(), request);
+
         return userMapper.toResponse(resultUser);
     }
 
@@ -70,9 +75,13 @@ public class UserServiceImpl implements UserService {
         User user = userValidationService.throwsUserNotFoundException(id);
         user.setAccountStatus(DELETED);
         userRepository.save(user);
+
+        keycloakUserService.deleteUser(user.getExternalId().toString());
+
         userMapper.toResponse(user);
     }
 
+    @Override
     public UserResponse recoverTheAccount(UUID id) {
         User user = userValidationService.throwsUserNotFoundExceptionForDeletedUsers(id);
         user.setAccountStatus(MODIFYING);

@@ -19,4 +19,6 @@ public interface UserRepository extends JpaRepositoryImplementation<User, UUID> 
     Optional<User> findByIdAndAccountStatusNot(UUID id, AccountStatus accountStatus);
 
     Page<User> findByAccountStatus(AccountStatus accountStatus, Pageable pageable);
+
+    List<User> findByUsernameOrEmail(String username, String email);
 }

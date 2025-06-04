@@ -21,4 +21,6 @@ public class KeycloakProperties {
 
     private String realm;
 
+    private String defaultRole;
+
 }
