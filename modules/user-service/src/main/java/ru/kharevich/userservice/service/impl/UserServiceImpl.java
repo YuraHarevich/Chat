@@ -91,6 +91,14 @@ public class UserServiceImpl implements UserService, UserEventService {
         User user = userValidationService.throwsUserNotFoundExceptionForDeletedUsers(request.id());
         user.setAccountStatus(MODIFYING);
 
+        return userMapper.toResponse(userRepository.save(user));
+    }
+
+    @Override
+    public UserResponse recoverTheAccountAndPostEvent(AccountRecoverRequest request) {
+        User user = userValidationService.throwsUserNotFoundExceptionForDeletedUsers(request.id());
+        user.setAccountStatus(MODIFYING);
+
         UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(user, CREATE_EVENT, request.password());
         userEventProducer.publishEventRequest(transferEntity);
 

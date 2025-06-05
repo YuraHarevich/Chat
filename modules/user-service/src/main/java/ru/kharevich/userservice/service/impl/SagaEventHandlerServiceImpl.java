@@ -98,10 +98,12 @@ public class SagaEventHandlerServiceImpl implements SagaEventHandlerService {
             }
             case UPDATE_COMPENSATION_EVENT -> {
                 userService.update(message.id(), userRequest);
+                userService.setExistsStatus(message.id());
             }
             case DELETE_COMPENSATION_EVENT -> {
                 userService.recoverTheAccount(
                         new AccountRecoverRequest(message.id(), message.password()));
+                userService.setExistsStatus(message.id());
             }
         }
 

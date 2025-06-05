@@ -8,3 +8,8 @@ scrape_configs:
     static_configs:
       - targets: [ "host.docker.internal:8010","ms-chat:8010" ]
     metrics_path: "actuator/prometheus"
+
+  - job_name: "user-metrics"
+    static_configs:
+      - targets: [ "host.docker.internal:8020","ms-user:8020" ]
+    metrics_path: "actuator/prometheus"

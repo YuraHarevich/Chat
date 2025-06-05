@@ -14,4 +14,5 @@ public interface UserValidationService {
     void throwsRepeatedUserDataExceptionForCreation(UserRequest request);
 
     void throwsRepeatedUserDataExceptionForUpdate(UserRequest request, UUID id);
+
 }

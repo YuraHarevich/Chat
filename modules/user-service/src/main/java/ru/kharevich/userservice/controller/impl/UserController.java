@@ -76,7 +76,7 @@ public class UserController implements UserApi {
     @PatchMapping("/recover")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public UserResponse recoverAccount(@RequestBody @Valid AccountRecoverRequest request) {
-        return userService.recoverTheAccount(request);
+        return userEventService.recoverTheAccountAndPostEvent(request);
     }
 
     @GetMapping("/login")
