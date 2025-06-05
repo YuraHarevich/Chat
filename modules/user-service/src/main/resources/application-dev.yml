@@ -1,0 +1,74 @@
+server:
+  port: 8020
+spring:
+  application:
+    name: user-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://${keycloak.domain}:8080/realms/${keycloak.realm}"
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/user_db
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  kafka:
+    topic:
+      user: user-topic
+    producer:
+      bootstrap-server: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      observation-enabled: true
+      properties:
+        spring.json.type.mapping: userEventTransferEntity:ru.kharevich.userservice.dto.events.UserEventTransferEntity
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: user-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      observation-enabled: true
+      properties:
+        spring.json.trusted.packages: '*'
+        spring.json.type.mapping: userEventTransferEntity:ru.kharevich.userservice.dto.events.UserEventTransferEntity
+
+app:
+  config:
+    time_of_expiration_of_accounts_in_days: 30
+    period_of_user_cleaning_in_millis: 3600000
+
+keycloak:
+  domain: localhost
+  clientId: client-api
+  clientSecret: uy9qYdDPk9CoYakehhGSRED6F9JV0ZKX
+  auth-url:  http://${keycloak.domain}:8080
+  realm: chat-realm
+  default-role: USER
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include:
+#          - health
+#          - prometheus
+#  prometheus:
+#    metrics:
+#      export:
+#        enabled: true
+#  metrics:
+#    tags:
+#      application: authentication-service
+#  zipkin:
+#    tracing:
+#      endpoint: ${TEMPO_ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+#  tracing:
+#    sampling:
+#      probability: 1.0
