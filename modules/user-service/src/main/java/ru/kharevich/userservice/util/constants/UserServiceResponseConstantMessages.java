@@ -18,9 +18,14 @@ public class UserServiceResponseConstantMessages {
 
     public static final String USER_CREATION_EXCEPTION_MESSAGE = "User creation failed";
 
+    public static final String USER_UPDATE_EXCEPTION_MESSAGE = "User update failed";
+
+    public static final String USER_DELETE_EXCEPTION_MESSAGE = "User delete failed";
+
     public static final String USER_CREATION_EXCEPTION_WHILE_REQUEST_MESSAGE = "User creation failed int request phase";
 
     public static final String JWT_CONVERT_EXCEPTION_MESSAGE = "JWT conversion failed";
 
+    public static final String WRONG_CREDENTIALS_MESSAGE = "wrong credentials";
 
 }

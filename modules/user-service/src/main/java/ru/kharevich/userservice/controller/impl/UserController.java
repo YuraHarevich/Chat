@@ -1,11 +1,10 @@
 package ru.kharevich.userservice.controller.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -21,11 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.kharevich.userservice.controller.api.UserApi;
 import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
+import ru.kharevich.userservice.dto.request.SignInRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
+import ru.kharevich.userservice.service.KeycloakUserService;
+import ru.kharevich.userservice.service.UserEventService;
 import ru.kharevich.userservice.service.UserService;
 import ru.kharevich.userservice.dto.response.UserResponse;
 
-import java.io.IOException;
 import java.util.UUID;
 
 @RestController
@@ -35,6 +36,10 @@ import java.util.UUID;
 public class UserController implements UserApi {
 
     private final UserService userService;
+
+    private final UserEventService userEventService;
+
+    private final KeycloakUserService keycloakUserService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -53,25 +58,31 @@ public class UserController implements UserApi {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse create(@RequestBody @Valid UserRequest dto) {
-        return userService.create(dto);
+        return userEventService.createUserPostEvent(dto);
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public UserResponse update(@PathVariable @Valid UUID id, @RequestBody @Valid UserRequest dto) {
-        return userService.update(id, dto);
+        return userEventService.updateUserPostEvent(id, dto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable @Valid UUID id) {
-        userService.delete(id);
+        userEventService.deleteUserPostEvent(id);
     }
 
     @PatchMapping("/recover")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public UserResponse recoverAccount(@RequestBody @Valid AccountRecoverRequest request) {
         return userService.recoverTheAccount(request);
+    }
+
+    @GetMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public AccessTokenResponse sighIn(@RequestBody @Valid SignInRequest request) {
+        return keycloakUserService.sighIn(request);
     }
 
 }

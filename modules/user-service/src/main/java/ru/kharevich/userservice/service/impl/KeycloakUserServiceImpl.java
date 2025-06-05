@@ -1,21 +1,27 @@
 package ru.kharevich.userservice.service.impl;
 
+import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.kharevich.userservice.dto.request.SignInRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
-import ru.kharevich.userservice.exceptions.UserCreationException;
+import ru.kharevich.userservice.exceptions.UserModifyingException;
+import ru.kharevich.userservice.exceptions.WrongCredentialsException;
 import ru.kharevich.userservice.service.KeycloakUserService;
 import ru.kharevich.userservice.util.props.KeycloakProperties;
 
@@ -25,6 +31,9 @@ import java.util.UUID;
 
 import static ru.kharevich.userservice.util.constants.UserServiceResponseConstantMessages.USER_CREATION_EXCEPTION_MESSAGE;
 import static ru.kharevich.userservice.util.constants.UserServiceResponseConstantMessages.USER_CREATION_EXCEPTION_WHILE_REQUEST_MESSAGE;
+import static ru.kharevich.userservice.util.constants.UserServiceResponseConstantMessages.USER_DELETE_EXCEPTION_MESSAGE;
+import static ru.kharevich.userservice.util.constants.UserServiceResponseConstantMessages.USER_UPDATE_EXCEPTION_MESSAGE;
+import static ru.kharevich.userservice.util.constants.UserServiceResponseConstantMessages.WRONG_CREDENTIALS_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
@@ -41,14 +50,34 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         UsersResource usersResource = realmResource.users();
 
         Response response = Optional.ofNullable(usersResource.create(keycloakUser))
-                .orElseThrow(() -> new UserCreationException(USER_CREATION_EXCEPTION_WHILE_REQUEST_MESSAGE));
+                .orElseThrow(() -> new UserModifyingException(USER_CREATION_EXCEPTION_WHILE_REQUEST_MESSAGE));
 
         if (response.getStatus() == HttpStatus.CREATED.value()) {
             String keycloakUserId = CreatedResponseUtil.getCreatedId(response);
             assignRoleToUser(realmResource, usersResource, keycloakProperties.getDefaultRole(), keycloakUserId);
             return UUID.fromString(keycloakUserId);
         } else {
-            throw new UserCreationException(USER_CREATION_EXCEPTION_MESSAGE);
+            log.error("KeycloakUserServiceImpl." + USER_CREATION_EXCEPTION_MESSAGE);
+            throw new UserModifyingException(USER_CREATION_EXCEPTION_MESSAGE);
+        }
+    }
+
+    @Override
+    public AccessTokenResponse sighIn(SignInRequest request) {
+        try {
+            Keycloak userKeycloak = KeycloakBuilder.builder()
+                    .serverUrl(keycloakProperties.getAuthUrl())
+                    .realm(keycloakProperties.getRealm())
+                    .grantType(OAuth2Constants.PASSWORD)
+                    .clientId(keycloakProperties.getClientId())
+                    .clientSecret(keycloakProperties.getClientSecret())
+                    .username(request.username())
+                    .password(request.password())
+                    .build();
+            return userKeycloak.tokenManager().getAccessToken();
+        } catch (ClientErrorException exception) {
+            log.error("KeycloakUserServiceImpl." + exception.getMessage());
+            throw new WrongCredentialsException(WRONG_CREDENTIALS_MESSAGE);
         }
     }
 
@@ -65,16 +94,19 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         userRepresentation.setEmail(request.email());
         userRepresentation.setEnabled(true);
 
-        // Обновление пароля, если он предоставлен
-        if (request.password() != null && !request.password().isEmpty()) {
-            CredentialRepresentation credential = new CredentialRepresentation();
-            credential.setType(CredentialRepresentation.PASSWORD);
-            credential.setValue(request.password());
-            credential.setTemporary(false);
-            userResource.resetPassword(credential);
+        try {
+            if (request.password() != null && !request.password().isEmpty()) {
+                CredentialRepresentation credential = new CredentialRepresentation();
+                credential.setType(CredentialRepresentation.PASSWORD);
+                credential.setValue(request.password());
+                credential.setTemporary(false);
+                userResource.resetPassword(credential);
+            }
+            userResource.update(userRepresentation);
+        } catch (Exception e) {
+            log.error("KeycloakUserServiceImpl." + e);
+            throw new UserModifyingException(USER_UPDATE_EXCEPTION_MESSAGE);
         }
-
-        userResource.update(userRepresentation);
     }
 
     @Override
@@ -82,8 +114,12 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         RealmResource realmResource = keycloak.realm(keycloakProperties.getRealm());
         UsersResource usersResource = realmResource.users();
         UserResource userResource = usersResource.get(userId);
-
-        userResource.remove();
+        try {
+            userResource.remove();
+        } catch (Exception e) {
+            log.error("KeycloakUserServiceImpl." + e);
+            throw new UserModifyingException(USER_DELETE_EXCEPTION_MESSAGE);
+        }
     }
 
     @Override
@@ -117,4 +153,5 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         UserResource userResource = usersResource.get(userId);
         userResource.roles().realmLevel().add(List.of(roleRepresentation));
     }
+
 }

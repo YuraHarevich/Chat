@@ -1,6 +1,10 @@
 package ru.kharevich.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -12,7 +16,7 @@ import ru.kharevich.userservice.exceptions.UserNotFoundException;
 import ru.kharevich.userservice.kafka.producer.UserEventProducer;
 import ru.kharevich.userservice.model.User;
 import ru.kharevich.userservice.repository.UserRepository;
-import ru.kharevich.userservice.service.KeycloakUserService;
+import ru.kharevich.userservice.service.UserEventService;
 import ru.kharevich.userservice.service.UserService;
 import ru.kharevich.userservice.util.mapper.UserEventMapper;
 import ru.kharevich.userservice.util.mapper.UserMapper;
@@ -30,7 +34,7 @@ import static ru.kharevich.userservice.util.constants.UserServiceResponseConstan
 
 @RequiredArgsConstructor
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserEventService {
 
     private final UserMapper userMapper;
 
@@ -38,9 +42,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserValidationService userValidationService;
 
-    private final KeycloakUserService keycloakUserService;
-
     private final UserEventProducer userEventProducer;
+
     private final UserEventMapper userEventMapper;
 
     @Override
@@ -59,11 +62,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse create(UserRequest dto) {
         userValidationService.throwsRepeatedUserDataExceptionForCreation(dto);
         User user = userMapper.toEntity(dto);
-
         userRepository.saveAndFlush(user);
-
-        UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(user, CREATE_EVENT, dto.password());
-        userEventProducer.publishEventRequest(transferEntity);
 
         return userMapper.toResponse(user);
     }
@@ -77,9 +76,6 @@ public class UserServiceImpl implements UserService {
         user.setAccountStatus(MODIFYING);
         User resultUser = userRepository.save(user);
 
-        UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(resultUser, UPDATE_EVENT, request.password());
-        userEventProducer.publishEventRequest(transferEntity);
-
         return userMapper.toResponse(resultUser);
     }
 
@@ -88,12 +84,6 @@ public class UserServiceImpl implements UserService {
         User user = userValidationService.throwsUserNotFoundException(id);
         user.setAccountStatus(DELETED);
         userRepository.save(user);
-
-        UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(user, DELETE_EVENT, null);
-        userEventProducer.publishEventRequest(transferEntity);
-
-
-        userMapper.toResponse(user);
     }
 
     @Override
@@ -121,4 +111,41 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public UserResponse createUserPostEvent(UserRequest dto) {
+        userValidationService.throwsRepeatedUserDataExceptionForCreation(dto);
+        User user = userMapper.toEntity(dto);
+
+        userRepository.saveAndFlush(user);
+
+        UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(user, CREATE_EVENT, dto.password());
+        userEventProducer.publishEventRequest(transferEntity);
+
+        return userMapper.toResponse(user);
+    }
+
+    @Override
+    public UserResponse updateUserPostEvent(UUID id, UserRequest request) {
+        userValidationService.throwsRepeatedUserDataExceptionForUpdate(request, id);
+        User user = userValidationService.throwsUserNotFoundException(id);
+        userMapper.updateUserByRequest(request, user);
+
+        user.setAccountStatus(MODIFYING);
+        User resultUser = userRepository.save(user);
+
+        UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(resultUser, UPDATE_EVENT, request.password());
+        userEventProducer.publishEventRequest(transferEntity);
+
+        return userMapper.toResponse(resultUser);
+    }
+
+    @Override
+    public void deleteUserPostEvent(UUID id) {
+        User user = userValidationService.throwsUserNotFoundException(id);
+        user.setAccountStatus(DELETED);
+        userRepository.save(user);
+
+        UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(user, DELETE_EVENT, null);
+        userEventProducer.publishEventRequest(transferEntity);
+    }
 }

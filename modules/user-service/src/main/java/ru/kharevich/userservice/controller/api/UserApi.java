@@ -2,11 +2,16 @@ package ru.kharevich.userservice.controller.api;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
+import ru.kharevich.userservice.dto.request.SignInRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.dto.response.UserResponse;
 
@@ -27,4 +32,7 @@ public interface UserApi {
 
     public UserResponse recoverAccount(@RequestBody @Valid AccountRecoverRequest request);
 
+    @GetMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    AccessTokenResponse sighIn(@RequestBody @Valid SignInRequest request);
 }

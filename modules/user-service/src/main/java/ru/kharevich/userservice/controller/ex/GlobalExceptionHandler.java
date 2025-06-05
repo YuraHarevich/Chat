@@ -11,12 +11,12 @@ import ru.kharevich.userservice.dto.other.ErrorMessage;
 import ru.kharevich.userservice.exceptions.EnumStatusConversionException;
 import ru.kharevich.userservice.exceptions.JwtConverterException;
 import ru.kharevich.userservice.exceptions.RepeatedUserDataException;
-import ru.kharevich.userservice.exceptions.UserCreationException;
+import ru.kharevich.userservice.exceptions.UserModifyingException;
 import ru.kharevich.userservice.exceptions.UserNotFoundException;
+import ru.kharevich.userservice.exceptions.WrongCredentialsException;
 
+import javax.security.auth.login.CredentialException;
 import java.time.LocalDateTime;
-
-import static ru.kharevich.userservice.util.constants.UserServiceResponseConstantMessages.USER_NOT_FOUND_MESSAGE;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -70,11 +70,23 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            UserCreationException.class
+            UserModifyingException.class
     })
     public ResponseEntity<ErrorMessage> handleServiceUnavailable(Exception exception) {
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ErrorMessage.builder()
+                        .message(exception.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
+
+    @ExceptionHandler({
+            WrongCredentialsException.class
+    })
+    public ResponseEntity<ErrorMessage> handleUnAuthorized(Exception exception) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(ErrorMessage.builder()
                         .message(exception.getMessage())
                         .timestamp(LocalDateTime.now())
