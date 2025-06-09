@@ -152,6 +152,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         RoleRepresentation roleRepresentation = rolesResource.get(role).toRepresentation();
         UserResource userResource = usersResource.get(userId);
         userResource.roles().realmLevel().add(List.of(roleRepresentation));
+        log.info("KeycloakUserServiceImpl.role {} successfully assigned to user with id {}", role, userId);
     }
 
 }

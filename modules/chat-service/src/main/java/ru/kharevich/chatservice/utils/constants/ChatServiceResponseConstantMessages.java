@@ -10,4 +10,9 @@ public final class ChatServiceResponseConstantMessages {
 
     public static final String MESSAGE_WITH_ID_NOT_FOUND = "message with id %s not found";
 
+    public static final String USER_NOT_FOUND = "user with id %s not found";
+
+    public static final String USER_SERVICE_UNAVAILABLE = "user service unavailable";
+
+
 }
