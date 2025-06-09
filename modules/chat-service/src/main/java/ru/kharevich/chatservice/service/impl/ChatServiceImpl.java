@@ -1,12 +1,14 @@
 package ru.kharevich.chatservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kharevich.chatservice.dto.other.MessageTransferEntity;
 import ru.kharevich.chatservice.dto.request.ChatRequest;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
@@ -34,6 +36,7 @@ import static ru.kharevich.chatservice.utils.constants.ChatServiceResponseConsta
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
@@ -71,6 +74,7 @@ public class ChatServiceImpl implements ChatService {
         chat.setSharedId(chatSharedId);
         Chat individualChat = null;
         for (UUID participant : chatRequest.participants()) {
+            log.info("creating chat for participant: {}", participant);
             //saving chat instance for each participant
             individualChat = chat.clone();
             individualChat.setOwner(participant);
@@ -98,6 +102,7 @@ public class ChatServiceImpl implements ChatService {
         return pageMapper.toResponse(convertedToResponseMessagePage);
     }
 
+    @Transactional
     public MessageResponse sendMessage(MessageRequest messageRequest) {
         chatServiceValidationService.validateIfThrowsChatNotFoundBySharedChatId(messageRequest.sharedId());
         chatServiceValidationService.validateIfThrowsUsersNotFound(Set.of(messageRequest.sender()));

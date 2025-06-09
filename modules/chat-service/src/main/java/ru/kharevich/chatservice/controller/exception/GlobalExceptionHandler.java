@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.kharevich.chatservice.dto.other.ErrorMessage;
 import ru.kharevich.chatservice.exception.ChatNotFoundException;
+import ru.kharevich.chatservice.exception.UserNotFoundException;
+import ru.kharevich.chatservice.exception.UserServiceInternalError;
 
 import java.time.LocalDateTime;
 
@@ -16,11 +18,24 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({
-            ChatNotFoundException.class
+            ChatNotFoundException.class,
+            UserNotFoundException.class,
     })
-    public ResponseEntity<ErrorMessage> handle(Exception exception) {
+    public ResponseEntity<ErrorMessage> handleNotFound(Exception exception) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(ErrorMessage.builder()
+                        .message(exception.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
+
+    @ExceptionHandler({
+            UserServiceInternalError.class
+    })
+    public ResponseEntity<ErrorMessage> handleServiceUnavailable(Exception exception) {
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(ErrorMessage.builder()
                         .message(exception.getMessage())
                         .timestamp(LocalDateTime.now())
