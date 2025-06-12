@@ -120,7 +120,7 @@ public class ChatBasicLogicModuleTests {
                 assertNotNull(response.id());
                 assertEquals(content, response.content());
                 assertEquals(participant1, response.sender());
-                assertEquals(chatIdParticipant1, response.chatId());
+                assertEquals(chatIdParticipant1.toHexString(), response.chatId());
 
                 Message senderMessage = messageRepository.findById(new ObjectId(response.id())).orElseThrow();
                 assertEquals(content, senderMessage.getContent());

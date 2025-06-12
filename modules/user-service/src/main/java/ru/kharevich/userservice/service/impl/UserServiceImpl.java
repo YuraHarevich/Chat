@@ -22,6 +22,7 @@ import ru.kharevich.userservice.util.mapper.UserEventMapper;
 import ru.kharevich.userservice.util.mapper.UserMapper;
 import ru.kharevich.userservice.util.validation.UserValidationService;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static ru.kharevich.userservice.model.AccountStatus.DELETED;
@@ -117,6 +118,15 @@ public class UserServiceImpl implements UserService, UserEventService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(userId)));
         user.setAccountStatus(EXISTS);
         userRepository.save(user);
+    }
+
+    @Override
+    public UserResponse getByUsername(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if(user.isEmpty()){
+            throw new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username));
+        }
+        return userMapper.toResponse(user.get());
     }
 
     @Override
