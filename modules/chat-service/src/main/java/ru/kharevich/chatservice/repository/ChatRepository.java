@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import ru.kharevich.chatservice.dto.response.ChatResponse;
 import ru.kharevich.chatservice.model.Chat;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface ChatRepository extends MongoRepository<Chat, ObjectId> {
     List<Chat> findBySharedId(UUID sharedId);
 
     Optional<Chat> findBySharedIdAndOwner(UUID sharedId, UUID owner);
+
+    Page<Chat> findByOwner(UUID owner, Pageable pageable);
 }

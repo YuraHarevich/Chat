@@ -38,6 +38,9 @@ public class Message implements Cloneable{
     @Field("chat_id")
     private ObjectId chatId;
 
+    @Field("shared_id")
+    private UUID sharedId;
+
     @Override
     public Message clone() {
         try {

@@ -5,17 +5,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kharevich.chatservice.dto.other.MessageTransferEntity;
 import ru.kharevich.chatservice.dto.request.ChatRequest;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
+import ru.kharevich.chatservice.dto.request.MessageRequestWebSocket;
 import ru.kharevich.chatservice.dto.response.ChatResponse;
+import ru.kharevich.chatservice.dto.response.FrontChatResponse;
 import ru.kharevich.chatservice.dto.response.MessageResponse;
 import ru.kharevich.chatservice.dto.response.PageableResponse;
 import ru.kharevich.chatservice.exception.ChatNotFoundException;
+import ru.kharevich.chatservice.external.reponse.UserResponse;
+import ru.kharevich.chatservice.feign.UserFeignClient;
 import ru.kharevich.chatservice.kafka.producer.MessageEntityMessageProducer;
 import ru.kharevich.chatservice.model.Chat;
 import ru.kharevich.chatservice.model.Message;
@@ -52,6 +54,8 @@ public class ChatServiceImpl implements ChatService {
     private final MessageMapper messageMapper;
 
     private final MessageEntityMessageProducer messageEntityMessageProducer;
+
+    private final UserFeignClient userFeignClient;
 
     public PageableResponse<ChatResponse> getAllChats(int size, int pageNumber) {
         Page<Chat> chatPage = chatRepository.findAll(PageRequest.of(pageNumber, size));
@@ -100,6 +104,38 @@ public class ChatServiceImpl implements ChatService {
         Page<Message> messagePage = messageRepository.findByChatIdOrderBySentTimeDesc(chatId, PageRequest.of(pageNumber, size));
         Page<MessageResponse> convertedToResponseMessagePage = messagePage.map(messageMapper::toResponse);
         return pageMapper.toResponse(convertedToResponseMessagePage);
+    }
+
+    @Override
+    public PageableResponse<FrontChatResponse> getAllChatsByUsername(String username, int size, int pageNumber) {
+        UserResponse userResponse = userFeignClient.getUserByUsernameIfExists(username);
+        UUID userId = userResponse.id();
+
+        Page<Chat> chats = chatRepository.findByOwner(userId, PageRequest.of(pageNumber, size));
+        Page<FrontChatResponse> convertedToResponseChatPage = chats.map((chat -> {
+            Set<UUID> participants = chat.getParticipants();
+            participants.remove(userId);
+            String chatUserName = null;
+            if(participants.iterator().hasNext()) {
+                chatUserName = userFeignClient.getUserIfExists(participants.iterator().next()).username();
+            }
+            return chatMapper.toFrontChatResponse(chat, chatUserName);
+        }));
+        return pageMapper.toResponse(convertedToResponseChatPage);
+    }
+
+    @Override
+    public MessageResponse sendMessageV2(MessageRequestWebSocket messageRequest) {
+
+        chatServiceValidationService.validateIfThrowsChatNotFoundByChatId(messageRequest.chatId());
+        UUID senderId = chatRepository.findById(messageRequest.chatId()).get().getOwner();
+
+        Message msg = messageMapper.toEntityV2(messageRequest, senderId);
+        msg.setStatus(SENT);
+        messageRepository.save(msg);
+        messageEntityMessageProducer.sendOrderRequest(
+                new MessageTransferEntity(msg.getChatId().toHexString(), msg.getId().toHexString()));
+        return messageMapper.toResponse(msg);
     }
 
     @Transactional

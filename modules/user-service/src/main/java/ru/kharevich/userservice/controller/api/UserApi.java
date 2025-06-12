@@ -24,6 +24,10 @@ public interface UserApi {
 
     public UserResponse get(@PathVariable @Valid UUID id);
 
+    @GetMapping("/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    UserResponse get(@PathVariable @Valid String username);
+
     public UserResponse create(@RequestBody @Valid UserRequest dto);
 
     public UserResponse update(@PathVariable @Valid UUID id, @RequestBody @Valid UserRequest dto);

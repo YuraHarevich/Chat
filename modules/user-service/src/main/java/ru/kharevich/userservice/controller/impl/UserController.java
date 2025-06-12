@@ -49,10 +49,16 @@ public class UserController implements UserApi {
         return new PagedModel<>(userResponses);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     @ResponseStatus(HttpStatus.OK)
     public UserResponse get(@PathVariable @Valid UUID id) {
         return userService.get(id);
+    }
+
+    @GetMapping("/username/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse get(@PathVariable @Valid String username) {
+        return userService.getByUsername(username);
     }
 
     @PostMapping

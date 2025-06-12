@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.kharevich.chatservice.controller.api.ChatApi;
 import ru.kharevich.chatservice.dto.request.ChatRequest;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
+import ru.kharevich.chatservice.dto.request.MessageRequestWebSocket;
 import ru.kharevich.chatservice.dto.response.ChatResponse;
+import ru.kharevich.chatservice.dto.response.FrontChatResponse;
 import ru.kharevich.chatservice.dto.response.MessageResponse;
 import ru.kharevich.chatservice.dto.response.PageableResponse;
 import ru.kharevich.chatservice.service.ChatService;
@@ -28,6 +31,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/chats")
 @RequiredArgsConstructor
 @Validated
+@CrossOrigin(origins = "http://localhost:3001")
 public class ChatController implements ChatApi {
 
     private final ChatService chatService;
@@ -38,6 +42,16 @@ public class ChatController implements ChatApi {
                                                       @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size) {
         size = size > 50 ? 50 : size;
         PageableResponse<ChatResponse> chats = chatService.getAllChats(size, page_number);
+        return chats;
+    }
+
+    @GetMapping("/username/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public PageableResponse<FrontChatResponse> getAllChatsByUsername(@RequestParam(defaultValue = "0") @Min(value = 0, message = "page number must be greater than 0") int page_number,
+                                                                     @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size,
+                                                                     @PathVariable("username") String username) {
+        size = size > 50 ? 50 : size;
+        PageableResponse<FrontChatResponse> chats = chatService.getAllChatsByUsername(username, size, page_number);
         return chats;
     }
 
@@ -80,6 +94,12 @@ public class ChatController implements ChatApi {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public MessageResponse sendMessage(@RequestBody @Valid MessageRequest messageRequest) {
         return chatService.sendMessage(messageRequest);
+    }
+
+    @PostMapping("/send-message/front")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public MessageResponse sendMessage(@RequestBody @Valid MessageRequestWebSocket messageRequest) {
+        return chatService.sendMessageV2(messageRequest);
     }
 
 }

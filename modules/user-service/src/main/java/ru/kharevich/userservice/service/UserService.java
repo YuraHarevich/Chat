@@ -1,6 +1,7 @@
 package ru.kharevich.userservice.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
@@ -28,4 +29,6 @@ public interface UserService {
     void setExternalId(UUID externalId, UUID userId);
 
     void setExistsStatus(UUID userId);
+
+    UserResponse getByUsername(String username);
 }

@@ -31,6 +31,11 @@ public class ChatServiceValidationServiceImpl implements ChatServiceValidationSe
     }
 
     @Override
+    public void validateIfThrowsUserNotFoundByUsername(String username) {
+        userFeignClient.getUserByUsernameIfExists(username);
+    }
+
+    @Override
     public void validateIfThrowsChatNotFoundByChatId(ObjectId chatId) {
         chatRepository.findById(chatId).orElseThrow(() -> {
             log.error("Chat with id {} not found", chatId);
