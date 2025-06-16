@@ -27,8 +27,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                         //.requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-in").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-up").permitAll()
                         .anyRequest().hasRole("USER"))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt

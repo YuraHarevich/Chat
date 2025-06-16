@@ -163,6 +163,23 @@ services:
     networks:
       - microservices-net
 
+  redis:
+    container_name: ms_redis
+    image: redis:8.0.2
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+    networks:
+      - microservices-net
+
 
 networks:
   microservices-net:
@@ -171,3 +188,4 @@ networks:
 volumes:
   mongo_ms_data:
   user_postgres:
+  redis_data:

@@ -1,0 +1,21 @@
+server:
+  port: 8000
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://${keycloak.domain}:8080/realms/${keycloak.realm}"
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+keycloak:
+  domain: localhost
+  realm: chat-realm
