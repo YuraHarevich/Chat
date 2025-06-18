@@ -17,13 +17,12 @@ import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3001")
 public class MessagingWebSocketController implements MessagingWebSocketControllerApi {
 
     private final ChatService chatService;
 
     @Controller
-    public class ChatController {
+    public class WebChatController {
 
         @MessageMapping("/chat.send.{sharedId}")
         @SendTo("/topic/chat.{sharedId}")

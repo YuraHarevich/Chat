@@ -37,7 +37,6 @@ import java.util.UUID;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Validated
-@CrossOrigin(origins = "http://localhost:3001")
 public class UserController implements UserApi {
 
     private final UserService userService;
