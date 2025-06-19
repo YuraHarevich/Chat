@@ -1,5 +1,6 @@
 package ru.kharevich.userservice.controller.api;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.keycloak.representations.AccessTokenResponse;
@@ -38,5 +39,6 @@ public interface UserApi {
 
     @GetMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    AccessTokenResponse sighIn(@RequestBody @Valid SignInRequest request);
+    AccessTokenResponse sighIn(@RequestBody @Valid SignInRequest request, HttpServletResponse serverResponse);
+
 }

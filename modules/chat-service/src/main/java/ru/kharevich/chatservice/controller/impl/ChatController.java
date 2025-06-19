@@ -31,7 +31,6 @@ import java.util.UUID;
 @RequestMapping("/api/v1/chats")
 @RequiredArgsConstructor
 @Validated
-@CrossOrigin(origins = "http://localhost:3001")
 public class ChatController implements ChatApi {
 
     private final ChatService chatService;

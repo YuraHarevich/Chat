@@ -1,7 +1,6 @@
 package ru.kharevich.userservice.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -11,7 +10,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.kharevich.userservice.util.converter.JwtAuthConverter;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -27,8 +31,10 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                         //.requestMatchers(HttpMethod.GET, "/api/v1/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-in").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-up").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/**").permitAll()
                         .anyRequest().hasRole("USER"))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt

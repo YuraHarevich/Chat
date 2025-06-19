@@ -1,5 +1,7 @@
 package ru.kharevich.userservice.controller.impl;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +9,9 @@ import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -61,7 +65,7 @@ public class UserController implements UserApi {
         return userService.getByUsername(username);
     }
 
-    @PostMapping
+    @PostMapping("sign-up")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse create(@RequestBody @Valid UserRequest dto) {
         return userEventService.createUserPostEvent(dto);
@@ -85,10 +89,12 @@ public class UserController implements UserApi {
         return userEventService.recoverTheAccountAndPostEvent(request);
     }
 
-    @GetMapping("/login")
+    @PostMapping("/sign-in")
     @ResponseStatus(HttpStatus.OK)
-    public AccessTokenResponse sighIn(@RequestBody @Valid SignInRequest request) {
-        return keycloakUserService.sighIn(request);
+    public AccessTokenResponse sighIn(@RequestBody @Valid SignInRequest request,
+                                      HttpServletResponse serverResponse) {
+        AccessTokenResponse response = keycloakUserService.sighIn(request);
+        return response;
     }
 
 }
