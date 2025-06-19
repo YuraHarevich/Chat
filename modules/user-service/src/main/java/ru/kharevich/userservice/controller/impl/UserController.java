@@ -94,11 +94,6 @@ public class UserController implements UserApi {
     public AccessTokenResponse sighIn(@RequestBody @Valid SignInRequest request,
                                       HttpServletResponse serverResponse) {
         AccessTokenResponse response = keycloakUserService.sighIn(request);
-        String jwt = response.getToken();
-        Cookie cookie = new Cookie("jwt", jwt);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        serverResponse.addCookie(cookie);
         return response;
     }
 

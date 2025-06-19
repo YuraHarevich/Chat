@@ -1,4 +1,4 @@
-package ru.kharevich.apigateway;
+package ru.kharevich.apigateway.utils;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -16,15 +16,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static ru.kharevich.apigateway.KeycloakConstants.REALM_ACCESS_CLAIM;
-import static ru.kharevich.apigateway.KeycloakConstants.ROLE_CLAIM;
-import static ru.kharevich.apigateway.KeycloakConstants.ROLE_PREFIX;
+import static ru.kharevich.apigateway.utils.KeycloakConstants.REALM_ACCESS_CLAIM;
+import static ru.kharevich.apigateway.utils.KeycloakConstants.ROLE_CLAIM;
+import static ru.kharevich.apigateway.utils.KeycloakConstants.ROLE_PREFIX;
 
 @Slf4j
 public class KeycloakReactiveJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
     @Override
     public AbstractAuthenticationToken convert(@NonNull Jwt jwt) {
+        log.info("KeycloakReactiveJwtAuthenticationConverter.convert");
         Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
         log.info("KeycloakReactiveJwtAuthenticationConverter.convert: Jwt successfully converted to JwtAuthenticationToken with authorities {}", authorities);
         return new JwtAuthenticationToken(jwt, authorities);

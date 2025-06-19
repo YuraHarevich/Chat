@@ -1,4 +1,4 @@
-package ru.kharevich.apigateway;
+package ru.kharevich.apigateway.config;
 
 
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -13,7 +13,7 @@ public class Routes {
     @Bean
     public RouteLocator userServiceRoute(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("passenger_service", r -> r
+                .route("user_service", r -> r
                         .path("/api/v1/users/**")
 //                        .filters(f -> f
 //                                .circuitBreaker(config -> config
@@ -29,7 +29,7 @@ public class Routes {
     @Bean
     public RouteLocator chatServiceRoute(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("driver_service", r -> r
+                .route("chat_service", r -> r
                         .path("/api/v1/chats/**")
 //                        .filters(f -> f
 //                                .circuitBreaker(config -> config
@@ -38,6 +38,22 @@ public class Routes {
 //                                )
 //                        )
                         .uri("lb://CHAT-SERVICE")
+                )
+                .build();
+    }
+
+    @Bean
+    public RouteLocator chatServiceWebSocketRoute(RouteLocatorBuilder builder) {
+        return builder.routes()
+                .route("chat_service", r -> r
+                                .path("/ws-chat")
+//                        .filters(f -> f
+//                                .circuitBreaker(config -> config
+//                                        .setName("driverServiceCircuitBreaker")
+//                                        .setFallbackUri("forward:/fallbackRoute")
+//                                )
+//                        )
+                                .uri("lb://CHAT-SERVICE")
                 )
                 .build();
     }
