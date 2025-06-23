@@ -1,39 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <!-- Общие настройки для всех профилей -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [traceId=%X{traceId:-NO_TRACE}, spanId=%X{spanId:-NO_SPAN}] %logger{36} - %msg%n"/>
+    <property name="LOKI_BATCH_SIZE" value="1000"/>
+    <property name="LOKI_TIMEOUT_SEC" value="5"/>
 
-    <!-- Console Appender -->
+    <!-- Console Appender (базовый для всех профилей) -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [traceId=%X{traceId:-NO_TRACE}, spanId=%X{spanId:-NO_SPAN}] %logger{36} - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- Loki Appender -->
-    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
-        <http>
-            <url>${LOKI_URL:-http://localhost:3100}/loki/api/v1/push</url>
-            <connectionTimeout>5000</connectionTimeout>
-            <requestTimeout>10000</requestTimeout>
-        </http>
-        <batch>
-            <maxItems>1000</maxItems>
-            <maxBytes>4194304</maxBytes>
-            <timeout>5</timeout>
-        </batch>
-        <format>
-            <label>
-                <pattern>app=chat-service,host=${HOSTNAME}</pattern>
-            </label>
-            <message>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [traceId=%X{traceId:-NO_TRACE}, spanId=%X{spanId:-NO_SPAN}] %logger{36} - %msg%n</pattern>
-            </message>
-        </format>
-    </appender>
+    <!-- Loki Appender (только для prod и staging) -->
+    <springProfile name="prod, staging">
+        <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+            <http>
+                <url>${LOKI_URL:-http://loki:3100}/loki/api/v1/push</url>
+                <connectionTimeout>5000</connectionTimeout>
+                <requestTimeout>15000</requestTimeout>
+                <tenantId>${LOKI_TENANT_ID:-}</tenantId>
+            </http>
+            <batch>
+                <maxItems>${LOKI_BATCH_SIZE}</maxItems>
+                <maxBytes>4194304</maxBytes>
+                <timeout>${LOKI_TIMEOUT_SEC}</timeout>
+            </batch>
+            <format>
+                <label>
+                    <pattern>app=chat-service,env=${spring.profiles.active},host=${HOSTNAME:-local}</pattern>
+                </label>
+                <message>
+                    <pattern>${LOG_PATTERN}</pattern>
+                </message>
+            </format>
+        </appender>
+    </springProfile>
 
-    <!-- Root Logger -->
-    <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="LOKI"/>
-    </root>
+    <!-- Настройки логирования для dev-профиля -->
+    <springProfile name="dev">
+        <logger name="ru.kharevich" level="DEBUG"/>
+        <logger name="org.springframework.web" level="INFO"/>
+        <logger name="org.hibernate.SQL" level="DEBUG"/>
+        <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
 
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- Настройки для prod-профиля -->
+    <springProfile name="prod">
+        <logger name="ru.kharevich" level="INFO"/>
+        <logger name="org.springframework" level="WARN"/>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="LOKI"/>
+        </root>
+    </springProfile>
+
+    <!-- Настройки для test-профиля -->
+    <springProfile name="test">
+        <root level="WARN">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- Fallback для неопределенных профилей -->
+    <springProfile name="!dev &amp; !prod &amp; !test">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
 </configuration>

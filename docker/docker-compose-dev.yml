@@ -180,7 +180,6 @@ services:
     networks:
       - microservices-net
 
-
 networks:
   microservices-net:
     driver: bridge

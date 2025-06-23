@@ -116,7 +116,7 @@ public class ChatServiceImpl implements ChatService {
             Set<UUID> participants = chat.getParticipants();
             participants.remove(userId);
             String chatUserName = null;
-            if(participants.iterator().hasNext()) {
+            if (participants.iterator().hasNext()) {
                 chatUserName = userFeignClient.getUserIfExists(participants.iterator().next()).username();
             }
             return chatMapper.toFrontChatResponse(chat, chatUserName);
@@ -139,7 +139,9 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Transactional
+
     public MessageResponse sendMessage(MessageRequest messageRequest) {
+        log.info("ChatServiceImpl.sendMessage: sending message: {}", messageRequest);
         chatServiceValidationService.validateIfThrowsChatNotFoundBySharedChatId(messageRequest.sharedId());
         chatServiceValidationService.validateIfThrowsUsersNotFound(Set.of(messageRequest.sender()));
 

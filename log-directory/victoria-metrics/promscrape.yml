@@ -13,3 +13,8 @@ scrape_configs:
     static_configs:
       - targets: [ "host.docker.internal:8020","ms-user:8020" ]
     metrics_path: "actuator/prometheus"
+
+  - job_name: "gateway-metrics"
+    static_configs:
+      - targets: [ "host.docker.internal:8000","ms-gateway:8000" ]
+    metrics_path: "actuator/prometheus"

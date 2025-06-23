@@ -28,7 +28,7 @@
             </batch>
             <format>
                 <label>
-                    <pattern>app=user-service,env=${spring.profiles.active},host=${HOSTNAME:-local}</pattern>
+                    <pattern>app=gateway-service,env=${spring.profiles.active},host=${HOSTNAME:-local}</pattern>
                 </label>
                 <message>
                     <pattern>${LOG_PATTERN}</pattern>

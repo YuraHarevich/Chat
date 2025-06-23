@@ -19,3 +19,24 @@ spring:
 keycloak:
   domain: localhost
   realm: chat-realm
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    tags:
+      application: gateway-service
+  zipkin:
+    tracing:
+      endpoint: ${TEMPO_ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+  tracing:
+    sampling:
+      probability: 1.0
