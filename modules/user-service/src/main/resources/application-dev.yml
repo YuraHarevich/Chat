@@ -16,8 +16,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+#    properties:
+#      hibernate:
+#        generate_statistics: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
   kafka:
     topic:
       user: user-topic
