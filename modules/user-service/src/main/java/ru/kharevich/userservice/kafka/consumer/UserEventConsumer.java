@@ -16,7 +16,7 @@ public class UserEventConsumer {
 
     @KafkaListener(topics = "${spring.kafka.topic.user}", groupId = "${spring.kafka.consumer.group-id}")
     public void consumeSupplyRequests(UserEventTransferEntity msg) {
-        log.info("UserEventConsumer.Consuming message");
+        log.info("UserEventConsumer.consumeSupplyRequests: Consuming message");
         eventHandlerService.handleEvent(msg);
     }
 

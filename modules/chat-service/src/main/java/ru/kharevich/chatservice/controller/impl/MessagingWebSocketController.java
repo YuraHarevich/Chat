@@ -5,19 +5,15 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import ru.kharevich.chatservice.controller.api.MessagingWebSocketControllerApi;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
-import ru.kharevich.chatservice.dto.request.MessageRequestWebSocket;
 import ru.kharevich.chatservice.service.ChatService;
 
 import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
-public class MessagingWebSocketController implements MessagingWebSocketControllerApi {
+public class MessagingWebSocketController {
 
     private final ChatService chatService;
 

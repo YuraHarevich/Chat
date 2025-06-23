@@ -3,14 +3,9 @@ package ru.kharevich.chatservice.controller.api;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.bson.types.ObjectId;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.kharevich.chatservice.dto.request.ChatRequest;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
-import ru.kharevich.chatservice.dto.request.MessageRequestWebSocket;
 import ru.kharevich.chatservice.dto.response.ChatResponse;
 import ru.kharevich.chatservice.dto.response.FrontChatResponse;
 import ru.kharevich.chatservice.dto.response.MessageResponse;
@@ -42,7 +37,4 @@ public interface ChatApi {
 
     MessageResponse sendMessage(@Valid MessageRequest messageRequest);
 
-    @PostMapping("/send-message")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    MessageResponse sendMessage(@RequestBody @Valid MessageRequestWebSocket messageRequest);
 }

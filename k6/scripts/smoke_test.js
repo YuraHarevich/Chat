@@ -1,6 +1,6 @@
-import { check, group, sleep } from 'k6';
+import {check, group, sleep} from 'k6';
 import http from 'k6/http';
-import { WebSocket } from 'k6/experimental/websockets';
+import {WebSocket} from 'k6/experimental/websockets';
 
 export const options = {
     vus: 1,
@@ -21,8 +21,8 @@ export default function () {
     group('Authentication', function () {
         const loginRes = http.post(
             `${BASE_URL}/api/v1/users/sign-in`,
-            JSON.stringify({ username: USERNAME, password: PASSWORD }),
-            { headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({username: USERNAME, password: PASSWORD}),
+            {headers: {'Content-Type': 'application/json'}}
         );
 
         check(loginRes, {
@@ -38,7 +38,7 @@ export default function () {
     group('Load chats', function () {
         const chatsRes = http.get(
             `${BASE_URL}/api/v1/chats/username/${USERNAME}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+            {headers: {Authorization: `Bearer ${token}`}}
         );
 
         check(chatsRes, {
@@ -55,7 +55,7 @@ export default function () {
     group('Load user', function () {
         const chatsRes = http.get(
             `${BASE_URL}/api/v1/users/username/${USERNAME}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+            {headers: {Authorization: `Bearer ${token}`}}
         );
 
         check(chatsRes, {
@@ -72,7 +72,7 @@ export default function () {
             `${BASE_URL.replace('http', 'ws')}/ws-chat`,
             null,
             {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: {Authorization: `Bearer ${token}`}
             }
         );
 

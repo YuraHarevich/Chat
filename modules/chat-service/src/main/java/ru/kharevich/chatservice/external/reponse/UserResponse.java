@@ -18,5 +18,6 @@ public record UserResponse(
         LocalDateTime birthDate,
 
         String email
+
 ) {
 }

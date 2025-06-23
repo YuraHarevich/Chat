@@ -15,7 +15,7 @@ public class KeycloakConfig {
     private final KeycloakProperties keycloakProperties;
 
     @Bean
-    public Keycloak keycloak(){
+    public Keycloak keycloak() {
         return KeycloakBuilder.builder()
                 .serverUrl(keycloakProperties.getAuthUrl())
                 .realm(keycloakProperties.getRealm())

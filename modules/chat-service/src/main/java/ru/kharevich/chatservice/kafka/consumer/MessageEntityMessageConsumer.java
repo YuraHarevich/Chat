@@ -17,12 +17,6 @@ public class MessageEntityMessageConsumer {
 
     private final SentMessageProcessService sentMessageProcessService;
 
-    private Tracer tracer;
-
-    private ObservationRegistry observationRegistry;
-
-    private final KafkaTemplate<String, MessageTransferEntity> kafkaTemplate;
-
     @KafkaListener(topics = "message-topic", groupId = "message-group")
     public void consumeSupplyRequests(MessageTransferEntity msg) {
         log.info("MessageEntityMessageConsumer.Consuming message");

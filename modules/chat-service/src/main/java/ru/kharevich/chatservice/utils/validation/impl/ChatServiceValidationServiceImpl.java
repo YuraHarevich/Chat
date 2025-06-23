@@ -25,7 +25,7 @@ public class ChatServiceValidationServiceImpl implements ChatServiceValidationSe
 
     @Override
     public void validateIfThrowsUsersNotFound(Set<UUID> participants) {
-        for(UUID participant : participants) {
+        for (UUID participant : participants) {
             userFeignClient.getUserIfExists(participant);
         }
     }
@@ -38,15 +38,15 @@ public class ChatServiceValidationServiceImpl implements ChatServiceValidationSe
     @Override
     public void validateIfThrowsChatNotFoundByChatId(ObjectId chatId) {
         chatRepository.findById(chatId).orElseThrow(() -> {
-            log.error("Chat with id {} not found", chatId);
+            log.error("ChatServiceValidationServiceImpl.validateIfThrowsChatNotFoundByChatId: Chat with id {} not found", chatId);
             return new ChatNotFoundException(CHAT_WITH_ID_NOT_FOUND.formatted(chatId));
         });
     }
 
     @Override
     public void validateIfThrowsChatNotFoundBySharedChatId(UUID sharedChatId) {
-        if(chatRepository.findBySharedId(sharedChatId).isEmpty()) {
-            log.error("Chat with shared id {} not found", sharedChatId);
+        if (chatRepository.findBySharedId(sharedChatId).isEmpty()) {
+            log.error("ChatServiceValidationServiceImpl.validateIfThrowsChatNotFoundByChatId: Chat with shared id {} not found", sharedChatId);
             throw new ChatNotFoundException(CHAT_WITH_ID_NOT_FOUND.formatted(sharedChatId));
         }
     }

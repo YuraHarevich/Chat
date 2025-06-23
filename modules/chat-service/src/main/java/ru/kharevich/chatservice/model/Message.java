@@ -10,14 +10,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.UUID;
 
 @Document("messages")
 @Getter
 @Setter
 @CompoundIndex(def = "{'chat_id': 1, 'sentTime': -1}") // Для быстрого поиска
-public class Message implements Cloneable{
+public class Message implements Cloneable {
 
     @Id
     private ObjectId id;

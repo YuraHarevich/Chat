@@ -3,7 +3,6 @@ package ru.kharevich.userservice.service;
 import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.dto.response.UserResponse;
-import ru.kharevich.userservice.model.User;
 
 import java.util.UUID;
 

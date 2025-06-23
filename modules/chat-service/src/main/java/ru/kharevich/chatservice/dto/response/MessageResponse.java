@@ -1,7 +1,5 @@
 package ru.kharevich.chatservice.dto.response;
 
-import org.bson.types.ObjectId;
-
 import java.util.UUID;
 
 public record MessageResponse(

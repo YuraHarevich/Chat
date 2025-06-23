@@ -1,22 +1,22 @@
 package ru.kharevich.userservice.controller.impl;
 
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
-import ru.kharevich.userservice.dto.request.SignInRequest;
-import ru.kharevich.userservice.dto.request.UserRequest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
+import ru.kharevich.userservice.dto.request.SignInRequest;
+import ru.kharevich.userservice.dto.request.UserRequest;
 
 import java.util.UUID;
 
@@ -30,6 +30,8 @@ class UserControllerValidationIntegrationTest {
 
     @Container
     static PostgreSQLContainer<?> psqlContainer = new PostgreSQLContainer<>(DockerImageName.parse("postgres:17.4"));
+    @LocalServerPort
+    private int port;
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -37,9 +39,6 @@ class UserControllerValidationIntegrationTest {
         registry.add("spring.datasource.username", psqlContainer::getUsername);
         registry.add("spring.datasource.password", psqlContainer::getPassword);
     }
-
-    @LocalServerPort
-    private int port;
 
     @BeforeEach
     void setup() {

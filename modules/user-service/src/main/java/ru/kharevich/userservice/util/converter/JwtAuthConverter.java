@@ -33,7 +33,7 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
         try {
             token = TokenVerifier.create(jwt.getTokenValue(), AccessToken.class).getToken();
         } catch (VerificationException e) {
-            log.error("JwtAuthConverter." + e.getMessage());
+            log.error("JwtAuthConverter.convert: " + e.getMessage());
             throw new JwtConverterException(JWT_CONVERT_EXCEPTION_MESSAGE);
         }
 

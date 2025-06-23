@@ -19,7 +19,6 @@ import ru.kharevich.userservice.util.converter.MyAccountStatusConverter;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static ru.kharevich.userservice.model.AccountStatus.EXISTS;
 import static ru.kharevich.userservice.model.AccountStatus.MODIFYING;
 
 @Entity

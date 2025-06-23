@@ -1,10 +1,6 @@
 package ru.kharevich.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -107,7 +103,7 @@ public class UserServiceImpl implements UserService, UserEventService {
     }
 
     @Override
-    public void setExternalId(UUID externalId,  UUID userId) {
+    public void setExternalId(UUID externalId, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(userId)));
         user.setExternalId(externalId);
         userRepository.save(user);
@@ -123,7 +119,7 @@ public class UserServiceImpl implements UserService, UserEventService {
     @Override
     public UserResponse getByUsername(String username) {
         Optional<User> user = userRepository.findByUsername(username);
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             throw new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username));
         }
         return userMapper.toResponse(user.get());

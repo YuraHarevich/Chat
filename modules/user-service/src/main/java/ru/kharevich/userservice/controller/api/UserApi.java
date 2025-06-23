@@ -25,8 +25,6 @@ public interface UserApi {
 
     public UserResponse get(@PathVariable @Valid UUID id);
 
-    @GetMapping("/{username}")
-    @ResponseStatus(HttpStatus.OK)
     UserResponse get(@PathVariable @Valid String username);
 
     public UserResponse create(@RequestBody @Valid UserRequest dto);
@@ -37,8 +35,6 @@ public interface UserApi {
 
     public UserResponse recoverAccount(@RequestBody @Valid AccountRecoverRequest request);
 
-    @GetMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
     AccessTokenResponse sighIn(@RequestBody @Valid SignInRequest request, HttpServletResponse serverResponse);
 
 }

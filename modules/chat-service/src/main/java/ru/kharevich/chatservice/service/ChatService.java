@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Min;
 import org.bson.types.ObjectId;
 import ru.kharevich.chatservice.dto.request.ChatRequest;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
-import ru.kharevich.chatservice.dto.request.MessageRequestWebSocket;
 import ru.kharevich.chatservice.dto.response.ChatResponse;
 import ru.kharevich.chatservice.dto.response.FrontChatResponse;
 import ru.kharevich.chatservice.dto.response.MessageResponse;
@@ -13,6 +12,7 @@ import ru.kharevich.chatservice.dto.response.PageableResponse;
 import java.util.UUID;
 
 public interface ChatService {
+
     PageableResponse<ChatResponse> getAllChats(int size, int pageNumber);
 
     ChatResponse getChat(ObjectId id);
@@ -27,5 +27,4 @@ public interface ChatService {
 
     PageableResponse<FrontChatResponse> getAllChatsByUsername(String username, @Min(value = 1, message = "size must be greater than 1") int size, @Min(value = 0, message = "page number must be greater than 0") int pageNumber);
 
-    MessageResponse sendMessageV2(MessageRequestWebSocket messageRequest);
 }

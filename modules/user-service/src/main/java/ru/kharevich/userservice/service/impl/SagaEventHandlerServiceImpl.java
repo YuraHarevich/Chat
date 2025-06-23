@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.kharevich.userservice.dto.events.UserEventTransferEntity;
 import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
-import ru.kharevich.userservice.exceptions.UserModifyingException;
 import ru.kharevich.userservice.kafka.producer.UserEventProducer;
 import ru.kharevich.userservice.service.KeycloakUserService;
 import ru.kharevich.userservice.service.SagaEventHandlerService;
@@ -36,7 +35,8 @@ public class SagaEventHandlerServiceImpl implements SagaEventHandlerService {
     public void handleEvent(UserEventTransferEntity message) {
         UserRequest userRequest = userEventMapper.toUserRequest(message);
 
-        switch(message.eventType()){
+        log.info("SagaEventHandlerServiceImpl.handleEvent: handling {} event", message.eventType());
+        switch (message.eventType()) {
             case CREATE_EVENT -> {
                 UUID externalId = null;
                 try {

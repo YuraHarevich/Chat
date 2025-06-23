@@ -24,7 +24,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import static ru.kharevich.chatservice.utils.constants.ChatServiceResponseConstantMessages.CHAT_WITH_ID_NOT_FOUND;
 
 @Testcontainers
@@ -124,12 +127,12 @@ class ChatControllerValidationIntegrationTest {
                 .path("id");
 
         UUID sharedId = UUID.fromString(
-            given()
-                .when()
-                .get("/api/v1/chats/" + chatId)
-                .then()
-                .extract()
-                .path("sharedId"));
+                given()
+                        .when()
+                        .get("/api/v1/chats/" + chatId)
+                        .then()
+                        .extract()
+                        .path("sharedId"));
 
         // Затем отправляем сообщение
         MessageRequest messageRequest = new MessageRequest(

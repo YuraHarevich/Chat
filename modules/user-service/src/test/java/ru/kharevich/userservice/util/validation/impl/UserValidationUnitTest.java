@@ -13,10 +13,15 @@ import ru.kharevich.userservice.model.User;
 import ru.kharevich.userservice.repository.UserRepository;
 import ru.kharevich.userservice.utils.UserValidationTestFactory;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 import static ru.kharevich.userservice.model.AccountStatus.DELETED;
 import static ru.kharevich.userservice.model.AccountStatus.EXISTS;
 import static ru.kharevich.userservice.model.AccountStatus.MODIFYING;

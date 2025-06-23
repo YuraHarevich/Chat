@@ -9,5 +9,5 @@ import ru.kharevich.chatservice.controller.exception.DriverFeignErrorDecoder;
         configuration = DriverFeignErrorDecoder.class
 )
 @Profile("!test")
-public interface UserFeignClientDev extends UserFeignClient{
+public interface UserFeignClientDev extends UserFeignClient {
 }

@@ -20,11 +20,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScheduledRemovingOfLegacyAccounts {
 
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private final UserRepository userRepository;
     @Value("${app.config.time_of_expiration_of_accounts_in_days}")
     private long timeOfExpirationOfAccountsInDays;
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     @Scheduled(fixedRateString = "${app.config.period_of_user_cleaning_in_millis}")
     public void clearingTheQueueOfOutdated() {

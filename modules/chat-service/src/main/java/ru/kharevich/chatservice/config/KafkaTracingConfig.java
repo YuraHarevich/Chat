@@ -15,7 +15,7 @@ public class KafkaTracingConfig {
     public KafkaTemplate<String, MessageTransferEntity> messageKafkaTemplate(
             ProducerFactory<String, MessageTransferEntity> producerFactory) {
         KafkaTemplate<String, MessageTransferEntity> template = new KafkaTemplate<>(producerFactory);
-        template.setObservationEnabled(true); // Включаем автоматическую передачу traceId
+        template.setObservationEnabled(true);
         return template;
     }
 
@@ -27,7 +27,7 @@ public class KafkaTracingConfig {
         ConcurrentKafkaListenerContainerFactory<String, MessageTransferEntity> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
-        factory.getContainerProperties().setObservationEnabled(true); // Включаем обработку traceId
+        factory.getContainerProperties().setObservationEnabled(true);
         return factory;
     }
 }

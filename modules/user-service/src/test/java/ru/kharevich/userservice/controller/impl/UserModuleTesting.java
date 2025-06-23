@@ -64,6 +64,14 @@ public class UserModuleTesting {
     static PostgreSQLContainer<?> psqlContainer = new PostgreSQLContainer<>(
             DockerImageName.parse("postgres:17.4")
     );
+    @LocalServerPort
+    private int port;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private KafkaTemplate<String, UserEventTransferEntity> kafkaTemplate;
+    @Mock
+    private KeycloakUserService keycloakUserService;
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -75,18 +83,6 @@ public class UserModuleTesting {
         registry.add("spring.kafka.producer.bootstrap-servers", kafka::getBootstrapServers);
         registry.add("spring.kafka.consumer.bootstrap-servers", kafka::getBootstrapServers);
     }
-
-    @LocalServerPort
-    private int port;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private KafkaTemplate<String, UserEventTransferEntity> kafkaTemplate;
-
-    @Mock
-    private KeycloakUserService keycloakUserService;
 
     @BeforeEach
     void setup() {

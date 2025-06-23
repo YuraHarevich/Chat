@@ -26,11 +26,12 @@ import static ru.kharevich.userservice.util.constants.UserServiceResponseConstan
 public class UserValidationServiceImpl implements UserValidationService {
 
     private final UserRepository userRepository;
+
     @Override
     public User throwsUserNotFoundException(UUID id) {
         Optional<User> userOptional = userRepository.findByIdAndAccountStatusNot(id, DELETED);
-        if(userOptional.isPresent()) {
-            if(userOptional.get().getAccountStatus() == MODIFYING) {
+        if (userOptional.isPresent()) {
+            if (userOptional.get().getAccountStatus() == MODIFYING) {
                 log.info("UserValidationServiceImpl.User {} is already modifying", id);
                 throw new UserNotFoundException(USER_IS_STILL_MODIFYING.formatted(id));
             }
@@ -49,7 +50,7 @@ public class UserValidationServiceImpl implements UserValidationService {
 
     @Override
     public void throwsRepeatedUserDataExceptionForCreation(UserRequest request) {
-        if(!userRepository.findByUsernameOrEmail(request.username(), request.email()).isEmpty()){
+        if (!userRepository.findByUsernameOrEmail(request.username(), request.email()).isEmpty()) {
             log.info("UserValidationServiceImpl.Error while creation, users with such username {} or email {} already exists", request.username(), request.email());
             throw new RepeatedUserDataException(USER_REPEATED_DATA_MESSAGE);
         }
@@ -58,12 +59,12 @@ public class UserValidationServiceImpl implements UserValidationService {
     @Override
     public void throwsRepeatedUserDataExceptionForUpdate(UserRequest request, UUID id) {
         List<User> users = userRepository.findByUsernameOrEmail(request.username(), request.email());
-        if(users.size() > 1){
+        if (users.size() > 1) {
             log.info("UserValidationServiceImpl.Error while update, users with such username {} and email {} already exists", request.username(), request.email());
             throw new RepeatedUserDataException(USER_REPEATED_DATA_MESSAGE);
         }
-        if(users.size() == 1){
-            if(users.getFirst().getId().equals(id)){
+        if (users.size() == 1) {
+            if (users.getFirst().getId().equals(id)) {
                 log.info("UserValidationServiceImpl.Error while update, users with such username {} or email {} already exists", request.username(), request.email());
                 throw new RepeatedUserDataException(USER_REPEATED_DATA_MESSAGE);
             }

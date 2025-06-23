@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kharevich.chatservice.dto.other.MessageTransferEntity;
 import ru.kharevich.chatservice.dto.request.ChatRequest;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
-import ru.kharevich.chatservice.dto.request.MessageRequestWebSocket;
 import ru.kharevich.chatservice.dto.response.ChatResponse;
 import ru.kharevich.chatservice.dto.response.FrontChatResponse;
 import ru.kharevich.chatservice.dto.response.MessageResponse;
@@ -70,6 +69,7 @@ public class ChatServiceImpl implements ChatService {
         return chatMapper.toResponse(chat);
     }
 
+    @Transactional
     public ChatResponse createChat(ChatRequest chatRequest) {
         chatServiceValidationService.validateIfThrowsUsersNotFound(chatRequest.participants());
         Chat chat = chatMapper.toEntity(chatRequest);
@@ -124,22 +124,7 @@ public class ChatServiceImpl implements ChatService {
         return pageMapper.toResponse(convertedToResponseChatPage);
     }
 
-    @Override
-    public MessageResponse sendMessageV2(MessageRequestWebSocket messageRequest) {
-
-        chatServiceValidationService.validateIfThrowsChatNotFoundByChatId(messageRequest.chatId());
-        UUID senderId = chatRepository.findById(messageRequest.chatId()).get().getOwner();
-
-        Message msg = messageMapper.toEntityV2(messageRequest, senderId);
-        msg.setStatus(SENT);
-        messageRepository.save(msg);
-        messageEntityMessageProducer.sendOrderRequest(
-                new MessageTransferEntity(msg.getChatId().toHexString(), msg.getId().toHexString()));
-        return messageMapper.toResponse(msg);
-    }
-
     @Transactional
-
     public MessageResponse sendMessage(MessageRequest messageRequest) {
         log.info("ChatServiceImpl.sendMessage: sending message: {}", messageRequest);
         chatServiceValidationService.validateIfThrowsChatNotFoundBySharedChatId(messageRequest.sharedId());

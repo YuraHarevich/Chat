@@ -57,7 +57,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             assignRoleToUser(realmResource, usersResource, keycloakProperties.getDefaultRole(), keycloakUserId);
             return UUID.fromString(keycloakUserId);
         } else {
-            log.error("KeycloakUserServiceImpl." + USER_CREATION_EXCEPTION_MESSAGE);
+            log.debug("KeycloakUserServiceImpl.createUser: " + USER_CREATION_EXCEPTION_MESSAGE);
             throw new UserModifyingException(USER_CREATION_EXCEPTION_MESSAGE);
         }
     }
@@ -76,7 +76,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
                     .build();
             return userKeycloak.tokenManager().getAccessToken();
         } catch (ClientErrorException exception) {
-            log.error("KeycloakUserServiceImpl." + exception.getMessage());
+            log.debug("KeycloakUserServiceImpl.sighIn: " + exception.getMessage());
             throw new WrongCredentialsException(WRONG_CREDENTIALS_MESSAGE);
         }
     }
@@ -104,7 +104,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             }
             userResource.update(userRepresentation);
         } catch (Exception e) {
-            log.error("KeycloakUserServiceImpl." + e);
+            log.debug("KeycloakUserServiceImpl.updateUser: " + e);
             throw new UserModifyingException(USER_UPDATE_EXCEPTION_MESSAGE);
         }
     }
@@ -117,7 +117,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         try {
             userResource.remove();
         } catch (Exception e) {
-            log.error("KeycloakUserServiceImpl." + e);
+            log.debug("KeycloakUserServiceImpl.deleteUser: " + e);
             throw new UserModifyingException(USER_DELETE_EXCEPTION_MESSAGE);
         }
     }
@@ -143,7 +143,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         keycloakUser.setEmail(request.email());
         keycloakUser.setCredentials(List.of(credential));
         keycloakUser.setEnabled(true);
-
+        log.info("KeycloakUserServiceImpl.createKeycloakUser: user with id {} successfully created", keycloakUser.getId());
         return keycloakUser;
     }
 
