@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: discovery-service
+  profiles:
+    active: prod
 eureka:
   instance:
     hostname: localhost
