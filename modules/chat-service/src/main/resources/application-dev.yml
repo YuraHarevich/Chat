@@ -4,6 +4,8 @@ spring:
   application:
     name:
       chat-service
+  cache:
+    type: redis
   data:
     mongodb:
       uri: mongodb://root:password@localhost:27017/chat?authSource=admin

@@ -1,5 +1,6 @@
 package ru.kharevich.chatservice.dto.response;
 
+import java.io.Serializable;
 import java.util.List;
 
 public record PageableResponse<T>(
@@ -14,5 +15,5 @@ public record PageableResponse<T>(
 
         List<T> content
 
-) {
+) implements Serializable  {
 }

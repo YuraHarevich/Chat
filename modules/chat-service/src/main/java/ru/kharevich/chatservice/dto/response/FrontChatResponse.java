@@ -1,6 +1,8 @@
 package ru.kharevich.chatservice.dto.response;
 
-public record FrontChatResponse(
+import java.io.Serializable;
+
+public record FrontChatResponse (
 
         String username,
 
@@ -8,5 +10,5 @@ public record FrontChatResponse(
 
         String sharedId
 
-) {
+) implements Serializable {
 }

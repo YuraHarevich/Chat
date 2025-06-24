@@ -154,6 +154,11 @@
             <artifactId>loki-logback-appender</artifactId>
             <version>${logback.appender.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

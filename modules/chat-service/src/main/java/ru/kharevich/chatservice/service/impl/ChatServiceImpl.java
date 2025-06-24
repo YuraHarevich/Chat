@@ -3,6 +3,9 @@ package ru.kharevich.chatservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -56,12 +59,14 @@ public class ChatServiceImpl implements ChatService {
 
     private final UserFeignClient userFeignClient;
 
+    @Cacheable(value = "chats", key = "{#size, #pageNumber}")
     public PageableResponse<ChatResponse> getAllChats(int size, int pageNumber) {
         Page<Chat> chatPage = chatRepository.findAll(PageRequest.of(pageNumber, size));
         Page<ChatResponse> convertedToResponseChatPage = chatPage.map(chatMapper::toResponse);
         return pageMapper.toResponse(convertedToResponseChatPage);
     }
 
+    @Cacheable(value = "chat", key = "#id")
     public ChatResponse getChat(ObjectId id) {
         Optional<Chat> chatOptional = chatRepository.findById(id);
         Chat chat = chatOptional.orElseThrow(() ->
@@ -70,6 +75,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Transactional
+    @CacheEvict(value = {"chats", "userChats"}, allEntries = true)
     public ChatResponse createChat(ChatRequest chatRequest) {
         chatServiceValidationService.validateIfThrowsUsersNotFound(chatRequest.participants());
         Chat chat = chatMapper.toEntity(chatRequest);
@@ -96,17 +102,18 @@ public class ChatServiceImpl implements ChatService {
         return pageMapper.toResponse(convertedToResponseMessagePage);
     }
 
-    public PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(int size, int pageNumber, UUID sharedChatId, UUID ownerId) {
-        chatServiceValidationService.validateIfThrowsChatNotFoundBySharedChatId(sharedChatId);
+    @Cacheable(value = "chatMessages", key = "{#sharedId, #ownerId, #pageNumber, #size}")
+    public PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(int size, int pageNumber, UUID sharedId, UUID ownerId) {
+        chatServiceValidationService.validateIfThrowsChatNotFoundBySharedChatId(sharedId);
 
-        ObjectId chatId = chatRepository.findBySharedIdAndOwner(sharedChatId, ownerId).get().getId();
+        ObjectId chatId = chatRepository.findBySharedIdAndOwner(sharedId, ownerId).get().getId();
 
         Page<Message> messagePage = messageRepository.findByChatIdOrderBySentTimeDesc(chatId, PageRequest.of(pageNumber, size));
         Page<MessageResponse> convertedToResponseMessagePage = messagePage.map(messageMapper::toResponse);
         return pageMapper.toResponse(convertedToResponseMessagePage);
     }
 
-    @Override
+    @Cacheable(value = "userChats", key = "{#username, #pageNumber, #size}")
     public PageableResponse<FrontChatResponse> getAllChatsByUsername(String username, int size, int pageNumber) {
         UserResponse userResponse = userFeignClient.getUserByUsernameIfExists(username);
         UUID userId = userResponse.id();
@@ -125,6 +132,12 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "chat", key = "#result.id"),
+                    @CacheEvict(value = "chatMessages", key = "{#result.sharedId, #result.sender}")
+            }
+    )
     public MessageResponse sendMessage(MessageRequest messageRequest) {
         log.info("ChatServiceImpl.sendMessage: sending message: {}", messageRequest);
         chatServiceValidationService.validateIfThrowsChatNotFoundBySharedChatId(messageRequest.sharedId());

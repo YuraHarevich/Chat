@@ -5,6 +5,8 @@ spring:
     name: discovery-service
   profiles:
     active: dev
+  cache:
+    type: redis
 eureka:
   instance:
     hostname: localhost
