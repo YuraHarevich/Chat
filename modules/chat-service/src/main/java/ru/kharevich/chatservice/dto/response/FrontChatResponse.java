@@ -1,9 +1,6 @@
 package ru.kharevich.chatservice.dto.response;
 
-import org.bson.types.ObjectId;
-
-import java.util.Set;
-import java.util.UUID;
+import java.io.Serializable;
 
 public record FrontChatResponse(
 
@@ -13,5 +10,5 @@ public record FrontChatResponse(
 
         String sharedId
 
-) {
+) implements Serializable {
 }

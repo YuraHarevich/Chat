@@ -1,15 +1,10 @@
 package ru.kharevich.userservice.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.dto.response.UserResponse;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 public interface UserService {

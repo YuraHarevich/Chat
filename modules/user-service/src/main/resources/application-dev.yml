@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: user-service
+  cache:
+    type: redis
   security:
     oauth2:
       resourceserver:
@@ -16,8 +18,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    #    properties:
+    #      hibernate:
+    #        generate_statistics: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
   kafka:
     topic:
       user: user-topic
@@ -48,7 +54,7 @@ keycloak:
   domain: localhost
   clientId: client-api
   clientSecret: uy9qYdDPk9CoYakehhGSRED6F9JV0ZKX
-  auth-url:  http://${keycloak.domain}:8080
+  auth-url: http://${keycloak.domain}:8080
   realm: chat-realm
   default-role: USER
 

@@ -21,9 +21,9 @@ public class UserEventProducer {
     private String topic;
 
     public void publishEventRequest(UserEventTransferEntity msg) {
-        Message<UserEventTransferEntity> message = null;
+        log.info("UserEventProducer.publishEventRequest: sending message");
 
-        message = MessageBuilder
+        Message<UserEventTransferEntity> message = MessageBuilder
                 .withPayload(msg)
                 .setHeader(KafkaHeaders.TOPIC, topic)
                 .build();

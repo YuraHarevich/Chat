@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepositoryImplementation<User, UUID> 
 
     Optional<User> findByUsername(String username);
 
-    List<User>  findAllByAccountStatusAndUpdatedAtBefore(AccountStatus status, LocalDateTime updatedAt);
+    List<User> findAllByAccountStatusAndUpdatedAtBefore(AccountStatus status, LocalDateTime updatedAt);
 
     Optional<User> findByIdAndAccountStatusNot(UUID id, AccountStatus accountStatus);
 

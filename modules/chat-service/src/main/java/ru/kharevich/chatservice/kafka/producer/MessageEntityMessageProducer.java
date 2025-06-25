@@ -1,6 +1,5 @@
 package ru.kharevich.chatservice.kafka.producer;
 
-import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.tracing.TraceContext;
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
@@ -21,25 +20,21 @@ import java.util.Optional;
 public class MessageEntityMessageProducer {
 
     private final KafkaTemplate<String, MessageTransferEntity> kafkaTemplate;
-    private final ObservationRegistry observationRegistry;
-
+    private final Tracer tracer;
     @Value("${spring.kafka.topic.message}")
     private String topic;
-
-    private final Tracer tracer;
 
     public void sendOrderRequest(MessageTransferEntity msg) {
         Message<MessageTransferEntity> message = null;
 
-        if(getCurrentTraceparent().isPresent()) {
+        if (getCurrentTraceparent().isPresent()) {
             message = MessageBuilder
                     .withPayload(msg)
                     .setHeader(KafkaHeaders.TOPIC, topic)
                     .removeHeader("traceparent")
                     .setHeader("traceparent", getCurrentTraceparent())
                     .build();
-        }
-        else {
+        } else {
             message = MessageBuilder
                     .withPayload(msg)
                     .setHeader(KafkaHeaders.TOPIC, topic)
@@ -52,10 +47,9 @@ public class MessageEntityMessageProducer {
 
     private Optional<String> getCurrentTraceparent() {
         TraceContext context = tracer.currentTraceContext().context();
-        if(context != null) {
+        if (context != null) {
             return Optional.of(String.format("00-%s-%s-00", context.traceId(), context.spanId()));
-        }
-        else {
+        } else {
             return Optional.empty();
         }
     }

@@ -33,7 +33,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -45,13 +46,20 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 class ChatServiceUnitTest {
 
-    @Mock private ChatRepository chatRepository;
-    @Mock private ChatMapper chatMapper;
-    @Mock private PageMapper pageMapper;
-    @Mock private ChatServiceValidationService validationService;
-    @Mock private MessageRepository messageRepository;
-    @Mock private MessageMapper messageMapper;
-    @Mock private MessageEntityMessageProducer messageProducer;
+    @Mock
+    private ChatRepository chatRepository;
+    @Mock
+    private ChatMapper chatMapper;
+    @Mock
+    private PageMapper pageMapper;
+    @Mock
+    private ChatServiceValidationService validationService;
+    @Mock
+    private MessageRepository messageRepository;
+    @Mock
+    private MessageMapper messageMapper;
+    @Mock
+    private MessageEntityMessageProducer messageProducer;
 
     @InjectMocks
     private ChatServiceImpl chatService;

@@ -13,10 +13,8 @@ import ru.kharevich.chatservice.model.MessageStatus;
 import ru.kharevich.chatservice.repository.ChatRepository;
 import ru.kharevich.chatservice.repository.MessageRepository;
 import ru.kharevich.chatservice.service.SentMessageProcessService;
-import ru.kharevich.chatservice.utils.constants.ChatServiceResponseConstantMessages;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static ru.kharevich.chatservice.utils.constants.ChatServiceResponseConstantMessages.CHAT_WITH_ID_NOT_FOUND;
@@ -33,7 +31,7 @@ public class SentMessageProcessServiceImpl implements SentMessageProcessService 
 
     @Override
     public void processSentMessage(MessageTransferEntity messageTransferEntity) {
-        log.info("SentMessageProcessServiceImpl.processing message");
+        log.info("SentMessageProcessServiceImpl.processSentMessage:processing message with id {}", messageTransferEntity.messageId());
         ObjectId chatId = new ObjectId(messageTransferEntity.chatId());
         ObjectId messageId = new ObjectId(messageTransferEntity.messageId());
         UUID sharedId = chatRepository.findById(chatId)
@@ -48,13 +46,14 @@ public class SentMessageProcessServiceImpl implements SentMessageProcessService 
 
         message.setStatus(MessageStatus.RECEIVED);
         chatList.forEach(chat -> {
-            if(!chat.getId().equals(chatId)) {
+            if (!chat.getId().equals(chatId)) {
                 Message cloned = message.clone();
                 cloned.setChatId(chat.getId());
                 messageRepository.save(cloned);
-                log.info("Message received by" + chat.getOwner());
+                log.info("SentMessageProcessServiceImpl.processSentMessage:Message received by" + chat.getOwner());
             }
         });
         messageRepository.save(message);
     }
+
 }

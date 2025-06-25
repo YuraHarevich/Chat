@@ -14,14 +14,14 @@ public class Routes {
     public RouteLocator userServiceRoute(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("user_service", r -> r
-                        .path("/api/v1/users/**")
+                                .path("/api/v1/users/**")
 //                        .filters(f -> f
 //                                .circuitBreaker(config -> config
 //                                        .setName("passengerServiceCircuitBreaker")
 //                                        .setFallbackUri("forward:/fallbackRoute")
 //                                )
 //                        )
-                        .uri("lb://USER-SERVICE")
+                                .uri("lb://USER-SERVICE")
                 )
                 .build();
     }
@@ -30,14 +30,14 @@ public class Routes {
     public RouteLocator chatServiceRoute(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("chat_service", r -> r
-                        .path("/api/v1/chats/**")
+                                .path("/api/v1/chats/**")
 //                        .filters(f -> f
 //                                .circuitBreaker(config -> config
 //                                        .setName("driverServiceCircuitBreaker")
 //                                        .setFallbackUri("forward:/fallbackRoute")
 //                                )
 //                        )
-                        .uri("lb://CHAT-SERVICE")
+                                .uri("lb://CHAT-SERVICE")
                 )
                 .build();
     }

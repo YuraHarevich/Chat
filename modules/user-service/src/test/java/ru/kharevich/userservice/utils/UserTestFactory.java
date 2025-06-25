@@ -4,7 +4,6 @@ import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.model.AccountStatus;
 import ru.kharevich.userservice.model.User;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static ru.kharevich.userservice.model.AccountStatus.EXISTS;

@@ -1,7 +1,7 @@
-import { check, group, sleep } from 'k6';
+import {check, group, sleep} from 'k6';
 import http from 'k6/http';
-import { WebSocket } from 'k6/experimental/websockets';
-import { Trend, Rate } from 'k6/metrics';
+import {WebSocket} from 'k6/experimental/websockets';
+import {Rate, Trend} from 'k6/metrics';
 
 // Кастомные метрики
 const wsConnectTime = new Trend('ws_connect_time');
@@ -16,9 +16,9 @@ const TIMEOUT_DURATION = __ENV.TIMEOUT_DURATION || '1s';
 
 export const options = {
     stages: [
-        { duration: '30s', target: TARGET_VUS },  // Плавный рост
-        { duration: STAGE_DURATION, target: TARGET_VUS },  // Основная фаза
-        { duration: '30s', target: 0 }    // Завершение
+        {duration: '30s', target: TARGET_VUS},  // Плавный рост
+        {duration: STAGE_DURATION, target: TARGET_VUS},  // Основная фаза
+        {duration: '30s', target: 0}    // Завершение
     ],
     thresholds: {
         'http_req_failed': ['rate<0.05'],
@@ -51,8 +51,8 @@ export default function () {
         const loginStart = Date.now();
         const loginRes = http.post(
             `${BASE_URL}/api/v1/users/sign-in`,
-            JSON.stringify({ username: USERNAME, password: PASSWORD }),
-            { headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({username: USERNAME, password: PASSWORD}),
+            {headers: {'Content-Type': 'application/json'}}
         );
 
         check(loginRes, {
@@ -64,14 +64,14 @@ export default function () {
         // Получаем ID пользователя
         const userRes = http.get(
             `${BASE_URL}/api/v1/users/username/${USERNAME}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+            {headers: {Authorization: `Bearer ${token}`}}
         );
         userId = userRes.json('id');
 
         // Получаем первый чат
         const chatsRes = http.get(
             `${BASE_URL}/api/v1/chats/username/${USERNAME}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+            {headers: {Authorization: `Bearer ${token}`}}
         );
         sharedId = chatsRes.json('content.0.sharedId');
     });
@@ -81,7 +81,7 @@ export default function () {
     const ws = new WebSocket(
         `${BASE_URL.replace('http', 'ws')}/ws-chat`,
         null,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {headers: {Authorization: `Bearer ${token}`}}
     );
 
     ws.onerror = (e) => console.error(`[VU ${__VU}] WS error:`, e.error);
@@ -117,11 +117,15 @@ export default function () {
     function parseDuration(duration) {
         const unit = duration.slice(-1);
         const value = parseInt(duration.slice(0, -1));
-        switch(unit) {
-            case 's': return value;
-            case 'm': return value * 60;
-            case 'h': return value * 3600;
-            default: return 120; // 2 минуты по умолчанию
+        switch (unit) {
+            case 's':
+                return value;
+            case 'm':
+                return value * 60;
+            case 'h':
+                return value * 3600;
+            default:
+                return 120; // 2 минуты по умолчанию
         }
     }
 }

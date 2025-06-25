@@ -15,7 +15,6 @@ import ru.kharevich.userservice.exceptions.UserModifyingException;
 import ru.kharevich.userservice.exceptions.UserNotFoundException;
 import ru.kharevich.userservice.exceptions.WrongCredentialsException;
 
-import javax.security.auth.login.CredentialException;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice

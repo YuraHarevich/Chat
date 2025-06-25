@@ -14,5 +14,4 @@ public final class ChatServiceResponseConstantMessages {
 
     public static final String USER_SERVICE_UNAVAILABLE = "user service unavailable";
 
-
 }

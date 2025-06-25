@@ -1,6 +1,5 @@
 package ru.kharevich.userservice.service.impl;
 
-import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +13,6 @@ import ru.kharevich.userservice.dto.events.UserEventTransferEntity;
 import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.dto.response.UserResponse;
-import ru.kharevich.userservice.exceptions.RepeatedUserDataException;
 import ru.kharevich.userservice.exceptions.UserNotFoundException;
 import ru.kharevich.userservice.kafka.producer.UserEventProducer;
 import ru.kharevich.userservice.model.User;
@@ -28,9 +26,16 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-        import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static ru.kharevich.userservice.model.AccountStatus.DELETED;
 import static ru.kharevich.userservice.model.AccountStatus.EXISTS;
 import static ru.kharevich.userservice.model.AccountStatus.MODIFYING;

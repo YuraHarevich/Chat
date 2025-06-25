@@ -31,7 +31,6 @@ public class KeycloakReactiveJwtAuthenticationConverter implements Converter<Jwt
         return new JwtAuthenticationToken(jwt, authorities);
     }
 
-    @SuppressWarnings("unchecked")
     private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
 

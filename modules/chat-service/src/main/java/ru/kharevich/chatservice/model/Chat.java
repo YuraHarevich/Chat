@@ -16,7 +16,7 @@ import java.util.UUID;
 @Document("chats")
 @Getter
 @Setter
-public class Chat implements Cloneable{
+public class Chat implements Cloneable {
 
     @Id
     private ObjectId id;

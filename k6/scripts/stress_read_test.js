@@ -1,6 +1,6 @@
-import { check, group, sleep } from 'k6';
+import {check, group, sleep} from 'k6';
 import http from 'k6/http';
-import { Trend, Rate } from 'k6/metrics';
+import {Rate, Trend} from 'k6/metrics';
 
 // Кастомные метрики
 const chatLoadTime = new Trend('chat_load_time');
@@ -17,9 +17,9 @@ const MESSAGES_PER_CHAT = parseInt(__ENV.MESSAGES_PER_CHAT) || 20;
 
 export const options = {
     stages: [
-        { duration: '30s', target: TARGET_VUS },
-        { duration: STAGE_DURATION, target: TARGET_VUS },
-        { duration: '30s', target: 0 }
+        {duration: '30s', target: TARGET_VUS},
+        {duration: STAGE_DURATION, target: TARGET_VUS},
+        {duration: '30s', target: 0}
     ],
     thresholds: {
         'http_req_failed': ['rate<0.05'],
@@ -34,8 +34,8 @@ export default function () {
     group('Initialization', function () {
         const loginRes = http.post(
             `${BASE_URL}/api/v1/users/sign-in`,
-            JSON.stringify({ username: USERNAME, password: PASSWORD }),
-            { headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({username: USERNAME, password: PASSWORD}),
+            {headers: {'Content-Type': 'application/json'}}
         );
 
         check(loginRes, {
@@ -47,14 +47,14 @@ export default function () {
         // Получаем ID пользователя
         const userRes = http.get(
             `${BASE_URL}/api/v1/users/username/${USERNAME}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+            {headers: {Authorization: `Bearer ${token}`}}
         );
         userId = userRes.json('id');
 
         // Получаем список чатов
         const chatsRes = http.get(
             `${BASE_URL}/api/v1/chats/username/${USERNAME}`,
-            { headers: { Authorization: `Bearer ${token}` } }
+            {headers: {Authorization: `Bearer ${token}`}}
         );
         chats = chatsRes.json('content');
     });
@@ -72,8 +72,8 @@ export default function () {
                 const messagesRes = http.get(
                     `${BASE_URL}/api/v1/chats/${chat.chatId}/messages`,
                     {
-                        headers: { Authorization: `Bearer ${token}` },
-                        params: { size: MESSAGES_PER_CHAT }
+                        headers: {Authorization: `Bearer ${token}`},
+                        params: {size: MESSAGES_PER_CHAT}
                     }
                 );
 
@@ -93,10 +93,14 @@ export default function () {
 function parseDuration(duration) {
     const unit = duration.slice(-1);
     const value = parseInt(duration.slice(0, -1));
-    switch(unit) {
-        case 's': return value;
-        case 'm': return value * 60;
-        case 'h': return value * 3600;
-        default: return 1;
+    switch (unit) {
+        case 's':
+            return value;
+        case 'm':
+            return value * 60;
+        case 'h':
+            return value * 3600;
+        default:
+            return 1;
     }
 }

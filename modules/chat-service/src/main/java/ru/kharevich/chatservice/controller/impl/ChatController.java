@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.kharevich.chatservice.controller.api.ChatApi;
 import ru.kharevich.chatservice.dto.request.ChatRequest;
 import ru.kharevich.chatservice.dto.request.MessageRequest;
-import ru.kharevich.chatservice.dto.request.MessageRequestWebSocket;
 import ru.kharevich.chatservice.dto.response.ChatResponse;
 import ru.kharevich.chatservice.dto.response.FrontChatResponse;
 import ru.kharevich.chatservice.dto.response.MessageResponse;
@@ -57,10 +55,10 @@ public class ChatController implements ChatApi {
     @GetMapping("{sharedChatId}/{ownerId}/messages")
     @ResponseStatus(HttpStatus.OK)
     public PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(@RequestParam(defaultValue = "0")
-                                                                           @Min(value = 0, message = "page number must be greater than 0") int page_number,
-                                                                           @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size,
-                                                                           @PathVariable @Valid UUID sharedChatId,
-                                                                           @PathVariable @Valid UUID ownerId) {
+                                                                                 @Min(value = 0, message = "page number must be greater than 0") int page_number,
+                                                                                 @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size,
+                                                                                 @PathVariable @Valid UUID sharedChatId,
+                                                                                 @PathVariable @Valid UUID ownerId) {
         size = size > 50 ? 50 : size;
         PageableResponse<MessageResponse> chats = chatService.getMessagesBySharedChatIdAndOwnerId(size, page_number, sharedChatId, ownerId);
         return chats;
@@ -69,9 +67,9 @@ public class ChatController implements ChatApi {
     @GetMapping("{chatId}/messages")
     @ResponseStatus(HttpStatus.OK)
     public PageableResponse<MessageResponse> getMessagesByUniqueChatId(@RequestParam(defaultValue = "0")
-                                                                                 @Min(value = 0, message = "page number must be greater than 0") int page_number,
-                                                                                 @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size,
-                                                                                 @PathVariable @Valid ObjectId chatId) {
+                                                                       @Min(value = 0, message = "page number must be greater than 0") int page_number,
+                                                                       @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size,
+                                                                       @PathVariable @Valid ObjectId chatId) {
         size = size > 50 ? 50 : size;
         PageableResponse<MessageResponse> chats = chatService.getMessagesByUniqueChatId(size, page_number, chatId);
         return chats;
@@ -93,12 +91,6 @@ public class ChatController implements ChatApi {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public MessageResponse sendMessage(@RequestBody @Valid MessageRequest messageRequest) {
         return chatService.sendMessage(messageRequest);
-    }
-
-    @PostMapping("/send-message/front")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public MessageResponse sendMessage(@RequestBody @Valid MessageRequestWebSocket messageRequest) {
-        return chatService.sendMessageV2(messageRequest);
     }
 
 }

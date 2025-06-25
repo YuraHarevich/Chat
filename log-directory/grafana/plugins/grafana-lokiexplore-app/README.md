@@ -1,6 +1,8 @@
 # Grafana Logs Drilldown
 
-The Grafana Logs Drilldown app offers a queryless experience for browsing Loki logs without the need for writing complex queries. Discover or narrow down your search by using volume and text patterns. Uncover related logs and understand patterns—all with just a few clicks.
+The Grafana Logs Drilldown app offers a queryless experience for browsing Loki logs without the need for writing complex
+queries. Discover or narrow down your search by using volume and text patterns. Uncover related logs and understand
+patterns—all with just a few clicks.
 
 ## Requirements
 
@@ -8,8 +10,11 @@ Requires Grafana 11.3.0 or newer.
 
 ## Getting Started
 
-See the [getting started](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/logs/get-started/) for more info using Grafana Logs Drilldown.
-For instructions installing, see the [access and installation instructions](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/logs/access/)
+See
+the [getting started](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/logs/get-started/)
+for more info using Grafana Logs Drilldown.
+For instructions installing, see
+the [access and installation instructions](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/logs/access/)
 
 ## Documentation
 
@@ -34,4 +39,5 @@ If your issue is a bug, please open one [here](https://github.com/grafana/explor
 ### Changes
 
 We do not have a formal proposal process for changes or feature requests. If you have a change you would like to see in
-Grafana Logs Drilldown, please [file an issue](https://github.com/grafana/explore-logs/issues/new) with the necessary details.
+Grafana Logs Drilldown, please [file an issue](https://github.com/grafana/explore-logs/issues/new) with the necessary
+details.

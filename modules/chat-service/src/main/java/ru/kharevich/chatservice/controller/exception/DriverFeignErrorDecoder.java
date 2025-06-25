@@ -20,16 +20,16 @@ public class DriverFeignErrorDecoder implements ErrorDecoder {
     @Override
     @SneakyThrows
     public Exception decode(String methodKey, Response response) {
-        log.error("DriverFeignErrorDecoder.response code: {}", response.status());
+        log.debug("DriverFeignErrorDecoder.response code: {}", response.status());
         if (response.status() == 404) {
             String body = Util.toString(response.body().asReader(StandardCharsets.UTF_8));
             JsonNode jsonNode = new ObjectMapper().readTree(body);
             String id = jsonNode.has("id") ? jsonNode.get("id").asText() : "unknown";
 
-            log.error("DriverFeignErrorDecoder." + USER_NOT_FOUND.formatted(id));
+            log.debug("DriverFeignErrorDecoder.decode:" + USER_NOT_FOUND.formatted(id));
             return new UserNotFoundException(USER_NOT_FOUND.formatted(id));
         }
-        log.error("DriverFeignErrorDecoder." + USER_SERVICE_UNAVAILABLE);
+        log.debug("DriverFeignErrorDecoder.decode:" + USER_SERVICE_UNAVAILABLE);
         return new UserServiceInternalError(USER_SERVICE_UNAVAILABLE);
     }
 }

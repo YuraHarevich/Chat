@@ -14,14 +14,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
                 .addEndpoint("/ws-chat")
-                .setAllowedOriginPatterns("*"); // <-- это важно, если используешь allowCredentials
+                .setAllowedOriginPatterns("*");
 
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic"); // сообщения клиенту идут на /topic/...
-        config.setApplicationDestinationPrefixes("/app"); // клиент отправляет на /app/...
+        //config.enableSimpleBroker("/topic");
+        config.setApplicationDestinationPrefixes("/app");
     }
 }
 

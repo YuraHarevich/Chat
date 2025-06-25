@@ -1,10 +1,9 @@
 package ru.kharevich.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.representations.AccessTokenResponse;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -47,18 +46,22 @@ public class UserServiceImpl implements UserService, UserEventService {
 
     private final UserEventMapper userEventMapper;
 
+    @Cacheable(value = "users", key = "'page_' + #page_number + '_size_' + #size")
     @Override
     public Page<UserResponse> getAll(int page_number, int size) {
         Page<User> users = userRepository.findByAccountStatus(EXISTS, PageRequest.of(page_number, size));
         return users.map(userMapper::toResponse);
     }
 
+    @Cacheable(value = "users", key = "#id")
     @Override
     public UserResponse get(UUID id) {
+        System.out.println("cached");
         User user = userValidationService.throwsUserNotFoundException(id);
         return userMapper.toResponse(user);
     }
 
+    @CachePut(value = "users", key = "#result.id")
     @Override
     public UserResponse create(UserRequest dto) {
         userValidationService.throwsRepeatedUserDataExceptionForCreation(dto);
@@ -68,6 +71,7 @@ public class UserServiceImpl implements UserService, UserEventService {
         return userMapper.toResponse(user);
     }
 
+    @CachePut(value = "users", key = "#id")
     @Override
     public UserResponse update(UUID id, UserRequest request) {
         userValidationService.throwsRepeatedUserDataExceptionForUpdate(request, id);
@@ -80,6 +84,7 @@ public class UserServiceImpl implements UserService, UserEventService {
         return userMapper.toResponse(resultUser);
     }
 
+    @CacheEvict(value = "users", key = "#id")
     @Override
     public void delete(UUID id) {
         User user = userValidationService.throwsUserNotFoundException(id);
@@ -87,6 +92,7 @@ public class UserServiceImpl implements UserService, UserEventService {
         userRepository.save(user);
     }
 
+    @CachePut(value = "users", key = "#request.id()")
     @Override
     public UserResponse recoverTheAccount(AccountRecoverRequest request) {
         User user = userValidationService.throwsUserNotFoundExceptionForDeletedUsers(request.id());
@@ -95,6 +101,7 @@ public class UserServiceImpl implements UserService, UserEventService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
+    @CachePut(value = "users", key = "#request.id()")
     @Override
     public UserResponse recoverTheAccountAndPostEvent(AccountRecoverRequest request) {
         User user = userValidationService.throwsUserNotFoundExceptionForDeletedUsers(request.id());
@@ -106,13 +113,15 @@ public class UserServiceImpl implements UserService, UserEventService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
+    @CachePut(value = "users", key = "#userId")
     @Override
-    public void setExternalId(UUID externalId,  UUID userId) {
+    public void setExternalId(UUID externalId, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(userId)));
         user.setExternalId(externalId);
         userRepository.save(user);
     }
 
+    @CachePut(value = "users", key = "#userId")
     @Override
     public void setExistsStatus(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(userId)));
@@ -120,15 +129,17 @@ public class UserServiceImpl implements UserService, UserEventService {
         userRepository.save(user);
     }
 
+    @Cacheable(value = "users", key = "#username")
     @Override
     public UserResponse getByUsername(String username) {
         Optional<User> user = userRepository.findByUsername(username);
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             throw new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username));
         }
         return userMapper.toResponse(user.get());
     }
 
+    @CachePut(value = "users", key = "#result.id")
     @Override
     public UserResponse createUserPostEvent(UserRequest dto) {
         userValidationService.throwsRepeatedUserDataExceptionForCreation(dto);
@@ -142,6 +153,7 @@ public class UserServiceImpl implements UserService, UserEventService {
         return userMapper.toResponse(user);
     }
 
+    @CachePut(value = "users", key = "#id")
     @Override
     public UserResponse updateUserPostEvent(UUID id, UserRequest request) {
         userValidationService.throwsRepeatedUserDataExceptionForUpdate(request, id);
@@ -157,6 +169,7 @@ public class UserServiceImpl implements UserService, UserEventService {
         return userMapper.toResponse(resultUser);
     }
 
+    @CacheEvict(value = "users", key = "#id")
     @Override
     public void deleteUserPostEvent(UUID id) {
         User user = userValidationService.throwsUserNotFoundException(id);

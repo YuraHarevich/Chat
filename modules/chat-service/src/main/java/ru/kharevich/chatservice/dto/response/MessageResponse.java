@@ -1,7 +1,6 @@
 package ru.kharevich.chatservice.dto.response;
 
-import org.bson.types.ObjectId;
-
+import java.io.Serializable;
 import java.util.UUID;
 
 public record MessageResponse(
@@ -16,6 +15,6 @@ public record MessageResponse(
 
         String sharedId
 
-) {
+) implements Serializable {
 
 }
