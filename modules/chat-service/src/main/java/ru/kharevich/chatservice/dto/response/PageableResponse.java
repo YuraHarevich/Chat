@@ -15,5 +15,5 @@ public record PageableResponse<T>(
 
         List<T> content
 
-) implements Serializable  {
+) implements Serializable {
 }

@@ -1,5 +1,6 @@
 package ru.kharevich.userservice.dto.response;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,5 +19,5 @@ public record UserResponse(
         LocalDateTime birthDate,
 
         String email
-) {
+) implements Serializable {
 }

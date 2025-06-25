@@ -15,6 +15,6 @@ public record MessageResponse(
 
         String sharedId
 
-) implements Serializable  {
+) implements Serializable {
 
 }

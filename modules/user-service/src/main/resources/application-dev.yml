@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: user-service
+  cache:
+    type: redis
   security:
     oauth2:
       resourceserver:
@@ -16,9 +18,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-#    properties:
-#      hibernate:
-#        generate_statistics: true
+    #    properties:
+    #      hibernate:
+    #        generate_statistics: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 

@@ -1,6 +1,5 @@
 package ru.kharevich.chatservice.kafka.producer;
 
-import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.tracing.TraceContext;
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
