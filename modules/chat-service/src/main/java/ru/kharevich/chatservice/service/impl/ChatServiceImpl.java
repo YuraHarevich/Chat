@@ -94,19 +94,9 @@ public class ChatServiceImpl implements ChatService {
         return chatMapper.toResponse(individualChat);
     }
 
+    @Cacheable(value = "chatMessages", key = "{#chatId, #pageNumber, #size}")
     public PageableResponse<MessageResponse> getMessagesByUniqueChatId(int size, int pageNumber, ObjectId chatId) {
         chatServiceValidationService.validateIfThrowsChatNotFoundByChatId(chatId);
-
-        Page<Message> messagePage = messageRepository.findByChatIdOrderBySentTimeDesc(chatId, PageRequest.of(pageNumber, size));
-        Page<MessageResponse> convertedToResponseMessagePage = messagePage.map(messageMapper::toResponse);
-        return pageMapper.toResponse(convertedToResponseMessagePage);
-    }
-
-    @Cacheable(value = "chatMessages", key = "{#sharedId, #ownerId, #pageNumber, #size}")
-    public PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(int size, int pageNumber, UUID sharedId, UUID ownerId) {
-        chatServiceValidationService.validateIfThrowsChatNotFoundBySharedChatId(sharedId);
-
-        ObjectId chatId = chatRepository.findBySharedIdAndOwner(sharedId, ownerId).get().getId();
 
         Page<Message> messagePage = messageRepository.findByChatIdOrderBySentTimeDesc(chatId, PageRequest.of(pageNumber, size));
         Page<MessageResponse> convertedToResponseMessagePage = messagePage.map(messageMapper::toResponse);

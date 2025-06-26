@@ -8,7 +8,8 @@ import ru.kharevich.userservice.dto.request.UserRequest;
 import java.util.UUID;
 
 public interface KeycloakUserService {
-    public UUID createUser(UserRequest userRequest);
+
+    public UUID createKeycloakUser(UserRequest userRequest, UUID id);
 
     AccessTokenResponse sighIn(SignInRequest request);
 
@@ -16,5 +17,4 @@ public interface KeycloakUserService {
 
     void deleteUser(String userId);
 
-    UserRepresentation getUserById(String userId);
 }

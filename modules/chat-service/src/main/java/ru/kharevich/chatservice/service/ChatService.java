@@ -23,8 +23,6 @@ public interface ChatService {
 
     PageableResponse<MessageResponse> getMessagesByUniqueChatId(int size, int pageNumber, ObjectId chatId);
 
-    PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(int size, int pageNumber, UUID sharedChatId, UUID ownerId);
-
     PageableResponse<FrontChatResponse> getAllChatsByUsername(String username, @Min(value = 1, message = "size must be greater than 1") int size, @Min(value = 0, message = "page number must be greater than 0") int pageNumber);
 
 }

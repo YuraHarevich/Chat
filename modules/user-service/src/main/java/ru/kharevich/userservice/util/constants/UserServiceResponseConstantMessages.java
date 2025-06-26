@@ -28,4 +28,8 @@ public class UserServiceResponseConstantMessages {
 
     public static final String WRONG_CREDENTIALS_MESSAGE = "wrong credentials";
 
+    public static final String JWT_CLAIM_EXTRACT_EXCEPTION_MESSAGE = "JWT does not contain claim '%s'";
+
+    public static final String JWT_CONVERSION_EXCEPTION_MESSAGE = "Current authentication is not of type JwtAuthenticationToken";
+
 }

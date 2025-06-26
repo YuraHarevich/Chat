@@ -15,8 +15,8 @@ import ru.kharevich.userservice.exceptions.UserNotFoundException;
 import ru.kharevich.userservice.kafka.producer.UserEventProducer;
 import ru.kharevich.userservice.model.User;
 import ru.kharevich.userservice.repository.UserRepository;
-import ru.kharevich.userservice.service.UserEventService;
 import ru.kharevich.userservice.service.UserService;
+import ru.kharevich.userservice.util.JwtUtils;
 import ru.kharevich.userservice.util.mapper.UserEventMapper;
 import ru.kharevich.userservice.util.mapper.UserMapper;
 import ru.kharevich.userservice.util.validation.UserValidationService;
@@ -34,7 +34,7 @@ import static ru.kharevich.userservice.util.constants.UserServiceResponseConstan
 
 @RequiredArgsConstructor
 @Service
-public class UserServiceImpl implements UserService, UserEventService {
+public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
 
@@ -46,6 +46,8 @@ public class UserServiceImpl implements UserService, UserEventService {
 
     private final UserEventMapper userEventMapper;
 
+    private final JwtUtils jwtUtils;
+
     @Cacheable(value = "users", key = "'page_' + #page_number + '_size_' + #size")
     @Override
     public Page<UserResponse> getAll(int page_number, int size) {
@@ -53,33 +55,43 @@ public class UserServiceImpl implements UserService, UserEventService {
         return users.map(userMapper::toResponse);
     }
 
-    @Cacheable(value = "users", key = "#id")
+    @Cacheable(value = "users", keyGenerator = "userCacheKeyGenerator")
     @Override
-    public UserResponse get(UUID id) {
-        System.out.println("cached");
-        User user = userValidationService.throwsUserNotFoundException(id);
-        return userMapper.toResponse(user);
+    public UserResponse getUser() {
+        String userName = jwtUtils.getPreferredUsername();
+        Optional<User> user = userRepository.findByUsername(userName);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(userName));
+        }
+        return userMapper.toResponse(user.get());
     }
 
-    @CachePut(value = "users", key = "#result.id")
+    @CachePut(value = "users", keyGenerator = "userCacheKeyGenerator")
     @Override
     public UserResponse create(UserRequest dto) {
         userValidationService.throwsRepeatedUserDataExceptionForCreation(dto);
         User user = userMapper.toEntity(dto);
         userRepository.saveAndFlush(user);
 
+        UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(user, CREATE_EVENT, dto.password());
+        userEventProducer.publishEventRequest(transferEntity);
+
         return userMapper.toResponse(user);
     }
 
-    @CachePut(value = "users", key = "#id")
+    @CachePut(value = "users", keyGenerator = "userCacheKeyGenerator")
     @Override
-    public UserResponse update(UUID id, UserRequest request) {
+    public UserResponse update(UserRequest request) {
+        UUID id = UUID.fromString(jwtUtils.getUserId());
         userValidationService.throwsRepeatedUserDataExceptionForUpdate(request, id);
         User user = userValidationService.throwsUserNotFoundException(id);
         userMapper.updateUserByRequest(request, user);
 
         user.setAccountStatus(MODIFYING);
         User resultUser = userRepository.save(user);
+
+        UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(resultUser, UPDATE_EVENT, request.password());
+        userEventProducer.publishEventRequest(transferEntity);
 
         return userMapper.toResponse(resultUser);
     }
@@ -90,6 +102,16 @@ public class UserServiceImpl implements UserService, UserEventService {
         User user = userValidationService.throwsUserNotFoundException(id);
         user.setAccountStatus(DELETED);
         userRepository.save(user);
+
+        UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(user, DELETE_EVENT, null);
+        userEventProducer.publishEventRequest(transferEntity);
+    }
+
+    @CacheEvict(value = "users", key = "#id")
+    @Override
+    public void absoluteDelete(UUID id) {
+        User user = userValidationService.throwsUserNotFoundException(id);
+        userRepository.delete(user);
     }
 
     @CachePut(value = "users", key = "#request.id()")
@@ -113,7 +135,6 @@ public class UserServiceImpl implements UserService, UserEventService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
-    @CachePut(value = "users", key = "#userId")
     @Override
     public void setExternalId(UUID externalId, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(userId)));
@@ -121,7 +142,6 @@ public class UserServiceImpl implements UserService, UserEventService {
         userRepository.save(user);
     }
 
-    @CachePut(value = "users", key = "#userId")
     @Override
     public void setExistsStatus(UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(userId)));
@@ -131,7 +151,7 @@ public class UserServiceImpl implements UserService, UserEventService {
 
     @Cacheable(value = "users", key = "#username")
     @Override
-    public UserResponse getByUsername(String username) {
+    public UserResponse getUserByUsername(String username) {
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
             throw new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username));
@@ -139,44 +159,12 @@ public class UserServiceImpl implements UserService, UserEventService {
         return userMapper.toResponse(user.get());
     }
 
-    @CachePut(value = "users", key = "#result.id")
+    @Cacheable(value = "users", key = "#id")
     @Override
-    public UserResponse createUserPostEvent(UserRequest dto) {
-        userValidationService.throwsRepeatedUserDataExceptionForCreation(dto);
-        User user = userMapper.toEntity(dto);
-
-        userRepository.saveAndFlush(user);
-
-        UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(user, CREATE_EVENT, dto.password());
-        userEventProducer.publishEventRequest(transferEntity);
-
+    public UserResponse getUserById(UUID id) {
+        System.out.println("cached");
+        User user = userValidationService.throwsUserNotFoundException(id);
         return userMapper.toResponse(user);
     }
 
-    @CachePut(value = "users", key = "#id")
-    @Override
-    public UserResponse updateUserPostEvent(UUID id, UserRequest request) {
-        userValidationService.throwsRepeatedUserDataExceptionForUpdate(request, id);
-        User user = userValidationService.throwsUserNotFoundException(id);
-        userMapper.updateUserByRequest(request, user);
-
-        user.setAccountStatus(MODIFYING);
-        User resultUser = userRepository.save(user);
-
-        UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(resultUser, UPDATE_EVENT, request.password());
-        userEventProducer.publishEventRequest(transferEntity);
-
-        return userMapper.toResponse(resultUser);
-    }
-
-    @CacheEvict(value = "users", key = "#id")
-    @Override
-    public void deleteUserPostEvent(UUID id) {
-        User user = userValidationService.throwsUserNotFoundException(id);
-        user.setAccountStatus(DELETED);
-        userRepository.save(user);
-
-        UserEventTransferEntity transferEntity = userEventMapper.toEventEntity(user, DELETE_EVENT, null);
-        userEventProducer.publishEventRequest(transferEntity);
-    }
 }

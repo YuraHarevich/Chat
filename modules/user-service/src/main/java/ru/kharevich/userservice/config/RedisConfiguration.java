@@ -8,7 +8,10 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import ru.kharevich.userservice.service.impl.UserServiceImpl;
+import ru.kharevich.userservice.util.JwtUtils;
 
+import javax.crypto.KeyGenerator;
 import java.time.Duration;
 
 @Configuration
@@ -34,4 +37,5 @@ class RedisConfiguration {
                 .cacheDefaults(defaults)
                 .build();
     }
+
 }

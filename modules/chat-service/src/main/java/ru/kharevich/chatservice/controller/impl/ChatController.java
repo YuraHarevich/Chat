@@ -42,25 +42,13 @@ public class ChatController implements ChatApi {
         return chats;
     }
 
-    @GetMapping("/username/{username}")
+    @GetMapping("username/{username}")
     @ResponseStatus(HttpStatus.OK)
     public PageableResponse<FrontChatResponse> getAllChatsByUsername(@RequestParam(defaultValue = "0") @Min(value = 0, message = "page number must be greater than 0") int page_number,
                                                                      @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size,
                                                                      @PathVariable("username") String username) {
         size = size > 50 ? 50 : size;
         PageableResponse<FrontChatResponse> chats = chatService.getAllChatsByUsername(username, size, page_number);
-        return chats;
-    }
-
-    @GetMapping("{sharedChatId}/{ownerId}/messages")
-    @ResponseStatus(HttpStatus.OK)
-    public PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(@RequestParam(defaultValue = "0")
-                                                                                 @Min(value = 0, message = "page number must be greater than 0") int page_number,
-                                                                                 @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size,
-                                                                                 @PathVariable @Valid UUID sharedChatId,
-                                                                                 @PathVariable @Valid UUID ownerId) {
-        size = size > 50 ? 50 : size;
-        PageableResponse<MessageResponse> chats = chatService.getMessagesBySharedChatIdAndOwnerId(size, page_number, sharedChatId, ownerId);
         return chats;
     }
 
@@ -75,7 +63,7 @@ public class ChatController implements ChatApi {
         return chats;
     }
 
-    @GetMapping("{chatId}")
+    @GetMapping("id/{chatId}")
     @ResponseStatus(HttpStatus.OK)
     public ChatResponse getChatByUniqueId(@PathVariable @Valid ObjectId chatId) {
         return chatService.getChat(chatId);
@@ -87,7 +75,7 @@ public class ChatController implements ChatApi {
         return chatService.createChat(chat);
     }
 
-    @PostMapping("/send-message")
+    @PostMapping("send-message")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public MessageResponse sendMessage(@RequestBody @Valid MessageRequest messageRequest) {
         return chatService.sendMessage(messageRequest);

@@ -121,7 +121,7 @@ class UserServiceUnitTests {
         when(userMapper.toResponse(testUser)).thenReturn(testUserResponse);
 
         // Act
-        UserResponse result = userService.get(testUser.getId());
+        UserResponse result = userService.getUser();
 
         // Assert
         assertNotNull(result);
@@ -135,7 +135,7 @@ class UserServiceUnitTests {
         when(userValidationService.throwsUserNotFoundException(nonExistingId)).thenThrow(new UserNotFoundException("User not found"));
 
         // Act & Assert
-        assertThrows(UserNotFoundException.class, () -> userService.get(nonExistingId));
+        assertThrows(UserNotFoundException.class, () -> userService.getUser());
     }
 
     // create tests
@@ -184,7 +184,7 @@ class UserServiceUnitTests {
         when(userMapper.toResponse(updatedUser)).thenReturn(updatedResponse);
 
         // Act
-        UserResponse result = userService.update(testUser.getId(), testUserRequest);
+        UserResponse result = userService.update(testUserRequest);
 
         // Assert
         assertNotNull(result);
@@ -201,7 +201,7 @@ class UserServiceUnitTests {
 
         // Act & Assert
         assertThrows(UserNotFoundException.class,
-                () -> userService.update(nonExistingId, testUserRequest));
+                () -> userService.update(testUserRequest));
     }
 
     // recoverTheAccount tests

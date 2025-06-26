@@ -25,7 +25,6 @@ import ru.kharevich.userservice.dto.request.SignInRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.dto.response.UserResponse;
 import ru.kharevich.userservice.service.KeycloakUserService;
-import ru.kharevich.userservice.service.UserEventService;
 import ru.kharevich.userservice.service.UserService;
 
 import java.util.UUID;
@@ -38,11 +37,9 @@ public class UserController implements UserApi {
 
     private final UserService userService;
 
-    private final UserEventService userEventService;
-
     private final KeycloakUserService keycloakUserService;
 
-    @GetMapping
+    @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
     public PagedModel<UserResponse> getAll(@RequestParam(defaultValue = "0") @Min(value = 0, message = "page number must be greater than 0") int page_number,
                                            @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size) {
@@ -50,40 +47,48 @@ public class UserController implements UserApi {
         return new PagedModel<>(userResponses);
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("me")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponse get(@PathVariable @Valid UUID id) {
-        return userService.get(id);
+    public UserResponse get() {
+        return userService.getUser();
     }
 
     @GetMapping("/username/{username}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponse get(@PathVariable @Valid String username) {
-        return userService.getByUsername(username);
+    @Override
+    public UserResponse getByUsername(@PathVariable String username) {
+        return userService.getUserByUsername(username);
+    }
+
+    @GetMapping("/id/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @Override
+    public UserResponse getById(@PathVariable UUID id) {
+        return userService.getUserById(id);
     }
 
     @PostMapping("sign-up")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse create(@RequestBody @Valid UserRequest dto) {
-        return userEventService.createUserPostEvent(dto);
+        return userService.create(dto);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public UserResponse update(@PathVariable @Valid UUID id, @RequestBody @Valid UserRequest dto) {
-        return userEventService.updateUserPostEvent(id, dto);
+    public UserResponse update(@RequestBody @Valid UserRequest dto) {
+        return userService.update(dto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable @Valid UUID id) {
-        userEventService.deleteUserPostEvent(id);
+        userService.delete(id);
     }
 
     @PatchMapping("/recover")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public UserResponse recoverAccount(@RequestBody @Valid AccountRecoverRequest request) {
-        return userEventService.recoverTheAccountAndPostEvent(request);
+        return userService.recoverTheAccountAndPostEvent(request);
     }
 
     @PostMapping("/sign-in")
