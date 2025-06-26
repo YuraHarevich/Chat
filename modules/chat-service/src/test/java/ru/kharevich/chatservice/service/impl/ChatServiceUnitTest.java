@@ -128,28 +128,6 @@ class ChatServiceUnitTest {
     }
 
     @Test
-    void getMessagesBySharedChatIdAndOwnerId_ExistingChat_ReturnsMessages() {
-        UUID sharedId = UUID.randomUUID();
-        UUID ownerId = UUID.randomUUID();
-        ObjectId chatId = new ObjectId();
-
-        Chat chat = EntityFactory.createChat(sharedId, ownerId, Set.of(ownerId));
-        chat.setId(chatId);
-        when(chatRepository.findBySharedIdAndOwner(sharedId, ownerId)).thenReturn(Optional.of(chat));
-
-        Page<Message> messagePage = new PageImpl<>(List.of(EntityFactory.createMessage(chatId, ownerId)));
-        Page<MessageResponse> responsePage = new PageImpl<>(List.of(mock(MessageResponse.class)));
-
-        when(messageRepository.findByChatIdOrderBySentTimeDesc(eq(chatId), any(PageRequest.class))).thenReturn(messagePage);
-        when(messageMapper.toResponse(any())).thenReturn(responsePage.getContent().get(0));
-        when(pageMapper.toResponse(responsePage)).thenReturn(new PageableResponse<>(1, 1, 0, 1, responsePage.getContent()));
-
-        PageableResponse<MessageResponse> result = chatService.getMessagesBySharedChatIdAndOwnerId(10, 0, sharedId, ownerId);
-
-        assertEquals(1, result.totalElements());
-    }
-
-    @Test
     void sendMessage_ValidMessage_SavesAndProducesMessage() {
         UUID sender = UUID.randomUUID();
         UUID sharedId = UUID.randomUUID();

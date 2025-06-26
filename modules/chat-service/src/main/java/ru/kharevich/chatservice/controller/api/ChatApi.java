@@ -22,11 +22,6 @@ public interface ChatApi {
                                                                      @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be greater than 1") int size,
                                                                      String username);
 
-    PageableResponse<MessageResponse> getMessagesBySharedChatIdAndOwnerId(@Min(value = 0, message = "page number must be greater than 0") int page_number,
-                                                                          @Min(value = 1, message = "size must be greater than 1") int size,
-                                                                          @Valid UUID sharedChatId,
-                                                                          @Valid UUID ownerId);
-
     public PageableResponse<MessageResponse> getMessagesByUniqueChatId(@Min(value = 0, message = "page number must be greater than 0") int page_number,
                                                                        @Min(value = 1, message = "size must be greater than 1") int size,
                                                                        @Valid ObjectId chatId);

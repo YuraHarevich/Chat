@@ -40,8 +40,9 @@ public class SagaEventHandlerServiceImpl implements SagaEventHandlerService {
             case CREATE_EVENT -> {
                 UUID externalId = null;
                 try {
-                    externalId = keycloakUserService.createUser(userRequest);
+                    externalId = keycloakUserService.createKeycloakUser(userRequest, message.id());
                 } catch (Exception ex) {
+                    log.debug(ex.getMessage());
                     UserEventTransferEntity newMessage = new UserEventTransferEntity(
                             message.id(),
                             message.externalId(),
@@ -61,6 +62,7 @@ public class SagaEventHandlerServiceImpl implements SagaEventHandlerService {
                 try {
                     keycloakUserService.updateUser(message.externalId().toString(), userRequest);
                 } catch (Exception ex) {
+                    log.debug(ex.getMessage());
                     UserEventTransferEntity newMessage = new UserEventTransferEntity(
                             message.id(),
                             message.externalId(),
@@ -80,6 +82,7 @@ public class SagaEventHandlerServiceImpl implements SagaEventHandlerService {
                 try {
                     keycloakUserService.deleteUser(message.externalId().toString());
                 } catch (Exception ex) {
+                    log.debug(ex.getMessage());
                     UserEventTransferEntity newMessage = new UserEventTransferEntity(
                             message.id(),
                             message.externalId(),
@@ -94,10 +97,10 @@ public class SagaEventHandlerServiceImpl implements SagaEventHandlerService {
                 }
             }
             case CREATE_COMPENSATION_EVENT -> {
-                userService.delete(message.id());
+                userService.absoluteDelete(message.id());
             }
             case UPDATE_COMPENSATION_EVENT -> {
-                userService.update(message.id(), userRequest);
+                userService.update(userRequest);
                 userService.setExistsStatus(message.id());
             }
             case DELETE_COMPENSATION_EVENT -> {

@@ -16,20 +16,20 @@ import static ru.kharevich.chatservice.utils.constants.ChatServiceResponseConsta
 import static ru.kharevich.chatservice.utils.constants.ChatServiceResponseConstantMessages.USER_SERVICE_UNAVAILABLE;
 
 @Slf4j
-public class DriverFeignErrorDecoder implements ErrorDecoder {
+public class UserFeignErrorDecoder implements ErrorDecoder {
     @Override
     @SneakyThrows
     public Exception decode(String methodKey, Response response) {
-        log.debug("DriverFeignErrorDecoder.response code: {}", response.status());
+        log.debug("UserFeignErrorDecoder.response code: {}", response.status());
         if (response.status() == 404) {
             String body = Util.toString(response.body().asReader(StandardCharsets.UTF_8));
             JsonNode jsonNode = new ObjectMapper().readTree(body);
             String id = jsonNode.has("id") ? jsonNode.get("id").asText() : "unknown";
 
-            log.debug("DriverFeignErrorDecoder.decode:" + USER_NOT_FOUND.formatted(id));
+            log.debug("UserFeignErrorDecoder.decode:" + USER_NOT_FOUND.formatted(id));
             return new UserNotFoundException(USER_NOT_FOUND.formatted(id));
         }
-        log.debug("DriverFeignErrorDecoder.decode:" + USER_SERVICE_UNAVAILABLE);
+        log.debug("UserFeignErrorDecoder.decode:" + USER_SERVICE_UNAVAILABLE);
         return new UserServiceInternalError(USER_SERVICE_UNAVAILABLE);
     }
 }

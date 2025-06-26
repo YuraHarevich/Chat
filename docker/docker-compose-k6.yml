@@ -9,22 +9,22 @@ services:
   #        - "host.docker.internal:host-gateway"
   #      command: run -o json=/results/load_results.json /scripts/load_test.js
 
-  #    k6-stress:
-  #      container_name: k6-stress
-  #      image: grafana/k6
-  #      environment:
-  #        - BASE_URL=http://host.docker.internal:8000
-  #        - USERNAME=pumba4
-  #        - PASSWORD=qwerty
-  #        - TARGET_VUS=200
-  #        - STAGE_DURATION=3m
-  #        - TIMEOUT_DURATION=1s
-  #      volumes:
-  #        - ../k6/scripts:/scripts
-  #        - ../k6/results:/results
-  #      extra_hosts:
-  #        - "host.docker.internal:host-gateway"
-  #      command: run -o json=/results/stress_results.json /scripts/stress_test.js
+      k6-stress:
+        container_name: k6-stress
+        image: grafana/k6
+        environment:
+          - BASE_URL=http://host.docker.internal:8000
+          - USERNAME=pumba4
+          - PASSWORD=qwerty
+          - TARGET_VUS=200
+          - STAGE_DURATION=3m
+          - TIMEOUT_DURATION=1s
+        volumes:
+          - ../k6/scripts:/scripts
+          - ../k6/results:/results
+        extra_hosts:
+          - "host.docker.internal:host-gateway"
+        command: run  /scripts/stress_test.js
 
   #  k6-smoke:
   #    container_name: k6-smoke
@@ -36,19 +36,18 @@ services:
   #      - "host.docker.internal:host-gateway"
   #    command: run -o json=/results/smoke_results.json /scripts/smoke_test.js
 
-  k6-stress-read:
-    container_name: k6-stress-read
-    image: grafana/k6
-    environment:
-      - BASE_URL=http://host.docker.internal:8000
-      - USERNAME=pumba4
-      - PASSWORD=qwerty
-      - TARGET_VUS=50
-      - STAGE_DURATION=5m
-      - TIMEOUT_DURATION=0.5s
-    volumes:
-      - ../k6/scripts:/scripts
-      - ../k6/results:/results
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    command: run -o json=/results/stress_read_results.json /scripts/stress_read_test.js
+#  k6-stress-read:
+#    container_name: k6-stress-read
+#    image: grafana/k6
+#    environment:
+#      - BASE_URL=http://host.docker.internal:8000
+#      - USERNAME=pumba4
+#      - PASSWORD=qwerty
+#      - TARGET_VUS=100
+#      - STAGE_DURATION=5m
+#      - TIMEOUT_DURATION=0.5s
+#    volumes:
+#      - ../k6/scripts:/scripts
+#    extra_hosts:
+#      - "host.docker.internal:host-gateway"
+#    command: run /scripts/stress_read_test.js

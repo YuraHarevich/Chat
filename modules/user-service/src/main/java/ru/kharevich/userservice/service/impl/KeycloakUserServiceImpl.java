@@ -23,9 +23,12 @@ import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.exceptions.UserModifyingException;
 import ru.kharevich.userservice.exceptions.WrongCredentialsException;
 import ru.kharevich.userservice.service.KeycloakUserService;
+import ru.kharevich.userservice.util.constants.ApplicationConstants;
 import ru.kharevich.userservice.util.props.KeycloakProperties;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,23 +44,43 @@ import static ru.kharevich.userservice.util.constants.UserServiceResponseConstan
 public class KeycloakUserServiceImpl implements KeycloakUserService {
 
     private final Keycloak keycloak;
+
     private final KeycloakProperties keycloakProperties;
 
     @Override
-    public UUID createUser(UserRequest request) {
-        UserRepresentation keycloakUser = createKeycloakUser(request);
+    public UUID createKeycloakUser(UserRequest request, UUID user_id) {
+        CredentialRepresentation credential = new CredentialRepresentation();
+        credential.setType(CredentialRepresentation.PASSWORD);
+        credential.setValue(request.password());
+
+        Map<String, List<String>> attributes = new HashMap<>();
+        attributes.put(ApplicationConstants.USER_ID_ATTRIBUTE, List.of(user_id.toString()));
+
+        UserRepresentation keycloakUser = new UserRepresentation();
+        keycloakUser.setUsername(request.username());
+        keycloakUser.setFirstName(request.firstname());
+        keycloakUser.setLastName(request.lastname());
+        keycloakUser.setEmail(request.email());
+        keycloakUser.setCredentials(List.of(credential));
+        keycloakUser.setEnabled(true);
+        keycloakUser.setAttributes(attributes);
+
         RealmResource realmResource = keycloak.realm(keycloakProperties.getRealm());
         UsersResource usersResource = realmResource.users();
 
-        Response response = Optional.ofNullable(usersResource.create(keycloakUser))
-                .orElseThrow(() -> new UserModifyingException(USER_CREATION_EXCEPTION_WHILE_REQUEST_MESSAGE));
-
-        if (response.getStatus() == HttpStatus.CREATED.value()) {
-            String keycloakUserId = CreatedResponseUtil.getCreatedId(response);
-            assignRoleToUser(realmResource, usersResource, keycloakProperties.getDefaultRole(), keycloakUserId);
-            return UUID.fromString(keycloakUserId);
-        } else {
-            log.debug("KeycloakUserServiceImpl.createUser: " + USER_CREATION_EXCEPTION_MESSAGE);
+        try (Response response = usersResource.create(keycloakUser)) {
+            if (response.getStatus() == HttpStatus.CREATED.value()) {
+                String keycloakUserId = CreatedResponseUtil.getCreatedId(response);
+                assignRoleToUser(realmResource, usersResource, keycloakProperties.getDefaultRole(), keycloakUserId);
+                return UUID.fromString(keycloakUserId);
+            } else {
+                String errorResponse = response.readEntity(String.class);
+                log.error("KeycloakUserServiceImpl.createKeycloakUser: Failed to create Keycloak user. Status: {}, Error: {}",
+                        response.getStatus(), errorResponse);
+                throw new UserModifyingException(USER_CREATION_EXCEPTION_MESSAGE);
+            }
+        } catch (Exception e) {
+            log.error("KeycloakUserServiceImpl.createKeycloakUser: Exception while creating Keycloak user", e);
             throw new UserModifyingException(USER_CREATION_EXCEPTION_MESSAGE);
         }
     }
@@ -80,6 +103,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             throw new WrongCredentialsException(WRONG_CREDENTIALS_MESSAGE);
         }
     }
+
 
     @Override
     public void updateUser(String userId, UserRequest request) {
@@ -120,31 +144,6 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             log.debug("KeycloakUserServiceImpl.deleteUser: " + e);
             throw new UserModifyingException(USER_DELETE_EXCEPTION_MESSAGE);
         }
-    }
-
-    @Override
-    public UserRepresentation getUserById(String userId) {
-        RealmResource realmResource = keycloak.realm(keycloakProperties.getRealm());
-        UsersResource usersResource = realmResource.users();
-        UserResource userResource = usersResource.get(userId);
-        return userResource.toRepresentation();
-    }
-
-    private UserRepresentation createKeycloakUser(UserRequest request) {
-        CredentialRepresentation credential = new CredentialRepresentation();
-        credential.setType(CredentialRepresentation.PASSWORD);
-        credential.setValue(request.password());
-        credential.setTemporary(false);
-
-        UserRepresentation keycloakUser = new UserRepresentation();
-        keycloakUser.setUsername(request.username());
-        keycloakUser.setFirstName(request.firstname());
-        keycloakUser.setLastName(request.lastname());
-        keycloakUser.setEmail(request.email());
-        keycloakUser.setCredentials(List.of(credential));
-        keycloakUser.setEnabled(true);
-        log.info("KeycloakUserServiceImpl.createKeycloakUser: user with id {} successfully created", keycloakUser.getId());
-        return keycloakUser;
     }
 
     private void assignRoleToUser(RealmResource realmResource, UsersResource usersResource, String role, String userId) {

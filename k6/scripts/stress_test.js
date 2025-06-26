@@ -63,7 +63,7 @@ export default function () {
 
         // Получаем ID пользователя
         const userRes = http.get(
-            `${BASE_URL}/api/v1/users/username/${USERNAME}`,
+            `${BASE_URL}/api/v1/users/me`,
             {headers: {Authorization: `Bearer ${token}`}}
         );
         userId = userRes.json('id');
