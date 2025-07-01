@@ -14,6 +14,8 @@ public interface UserService {
 
     UserResponse getUser();
 
+    UserResponse getUserByUsername(String username);
+
     UserResponse create(UserRequest dto);
 
     UserResponse update(UserRequest dto);
@@ -31,7 +33,7 @@ public interface UserService {
 
     void setExistsStatus(UUID userId);
 
-    UserResponse getUserByUsername(String username);
+    Page<UserResponse> getUserByUsernameStartingWith(String username, int page_number, int size);
 
     UserResponse getUserById(UUID id);
 }

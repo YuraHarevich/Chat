@@ -8,11 +8,14 @@ import ru.kharevich.chatservice.model.Chat;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface ChatRepository extends MongoRepository<Chat, ObjectId> {
 
     Page<Chat> findAll(Pageable pageable);
+
+    List<Chat> findByParticipants(Set<UUID> participants);
 
     List<Chat> findBySharedId(UUID sharedId);
 

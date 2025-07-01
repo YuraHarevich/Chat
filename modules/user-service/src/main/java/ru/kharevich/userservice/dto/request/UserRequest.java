@@ -3,6 +3,8 @@ package ru.kharevich.userservice.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
+
 public record UserRequest(
 
         @NotNull(message = "username cannot be null")
@@ -18,7 +20,9 @@ public record UserRequest(
         String email,
 
         @NotNull(message = "password cannot be null")
-        String password
+        String password,
+
+        LocalDateTime birthDate
 
 ) {
 }

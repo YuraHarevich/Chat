@@ -14,4 +14,6 @@ public final class ChatServiceResponseConstantMessages {
 
     public static final String USER_SERVICE_UNAVAILABLE = "user service unavailable";
 
+    public static final String CHAT_ALREADY_EXISTS_EXCEPTION_MESSAGE = "chat already exists";
+
 }

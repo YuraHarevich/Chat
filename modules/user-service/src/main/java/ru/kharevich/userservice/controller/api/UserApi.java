@@ -25,7 +25,11 @@ public interface UserApi {
 
     public UserResponse get();
 
+    @GetMapping("/username/{username}")
+    @ResponseStatus(HttpStatus.OK)
     UserResponse getByUsername(@PathVariable String username);
+
+    PagedModel<UserResponse> getByUsernameStartingWith(@PathVariable String username);
 
     UserResponse getById(@PathVariable UUID id);
 

@@ -60,6 +60,13 @@ public class UserController implements UserApi {
         return userService.getUserByUsername(username);
     }
 
+    @GetMapping("/username/starts-with/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public PagedModel<UserResponse> getByUsernameStartingWith(@PathVariable String username) {
+        Page<UserResponse> userResponses = userService.getUserByUsernameStartingWith(username, 0, 5);
+        return new PagedModel<>(userResponses);
+    }
+
     @GetMapping("/id/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Override

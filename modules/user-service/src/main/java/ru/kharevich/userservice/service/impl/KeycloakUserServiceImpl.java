@@ -133,6 +133,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         }
     }
 
+
     @Override
     public void deleteUser(String userId) {
         RealmResource realmResource = keycloak.realm(keycloakProperties.getRealm());

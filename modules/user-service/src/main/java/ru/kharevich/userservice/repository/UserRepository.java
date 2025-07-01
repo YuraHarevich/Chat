@@ -16,6 +16,8 @@ public interface UserRepository extends JpaRepositoryImplementation<User, UUID> 
 
     Optional<User> findByUsername(String username);
 
+    Page<User> findByUsernameStartingWithIgnoreCase(String username , Pageable pageable);
+
     List<User> findAllByAccountStatusAndUpdatedAtBefore(AccountStatus status, LocalDateTime updatedAt);
 
     Optional<User> findByIdAndAccountStatusNot(UUID id, AccountStatus accountStatus);

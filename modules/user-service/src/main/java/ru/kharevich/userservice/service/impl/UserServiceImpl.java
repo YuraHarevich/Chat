@@ -21,6 +21,7 @@ import ru.kharevich.userservice.util.mapper.UserEventMapper;
 import ru.kharevich.userservice.util.mapper.UserMapper;
 import ru.kharevich.userservice.util.validation.UserValidationService;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -151,20 +152,26 @@ public class UserServiceImpl implements UserService {
 
     @Cacheable(value = "users", key = "#username")
     @Override
+    public Page<UserResponse> getUserByUsernameStartingWith(String username, int page_number, int size) {
+        Page<User> users = userRepository.findByUsernameStartingWithIgnoreCase(username, PageRequest.of(page_number, size));
+        return users.map(userMapper::toResponse);
+    }
+
+    @Cacheable(value = "users", key = "#id")
+    @Override
+    public UserResponse getUserById(UUID id) {
+        User user = userValidationService.throwsUserNotFoundException(id);
+        return userMapper.toResponse(user);
+    }
+
+    @Cacheable(value = "users", key = "#username")
+    @Override
     public UserResponse getUserByUsername(String username) {
         Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
             throw new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username));
         }
         return userMapper.toResponse(user.get());
-    }
-
-    @Cacheable(value = "users", key = "#id")
-    @Override
-    public UserResponse getUserById(UUID id) {
-        System.out.println("cached");
-        User user = userValidationService.throwsUserNotFoundException(id);
-        return userMapper.toResponse(user);
     }
 
 }

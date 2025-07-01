@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.kharevich.chatservice.dto.other.ErrorMessage;
+import ru.kharevich.chatservice.exception.ChatAlreadyExistsException;
 import ru.kharevich.chatservice.exception.ChatNotFoundException;
 import ru.kharevich.chatservice.exception.UserNotFoundException;
 import ru.kharevich.chatservice.exception.UserServiceInternalError;
@@ -36,6 +37,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorMessage> handleServiceUnavailable(Exception exception) {
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ErrorMessage.builder()
+                        .message(exception.getMessage())
+                        .timestamp(LocalDateTime.now())
+                        .build());
+    }
+
+    @ExceptionHandler({
+            ChatAlreadyExistsException.class
+    })
+    public ResponseEntity<ErrorMessage> handleServiceConflict(Exception exception) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
                 .body(ErrorMessage.builder()
                         .message(exception.getMessage())
                         .timestamp(LocalDateTime.now())

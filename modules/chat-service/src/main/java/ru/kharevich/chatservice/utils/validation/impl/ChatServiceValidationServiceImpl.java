@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
+import ru.kharevich.chatservice.exception.ChatAlreadyExistsException;
 import ru.kharevich.chatservice.exception.ChatNotFoundException;
+import ru.kharevich.chatservice.external.reponse.UserResponse;
 import ru.kharevich.chatservice.feign.UserFeignClient;
 import ru.kharevich.chatservice.repository.ChatRepository;
 import ru.kharevich.chatservice.utils.validation.ChatServiceValidationService;
@@ -12,6 +14,7 @@ import ru.kharevich.chatservice.utils.validation.ChatServiceValidationService;
 import java.util.Set;
 import java.util.UUID;
 
+import static ru.kharevich.chatservice.utils.constants.ChatServiceResponseConstantMessages.CHAT_ALREADY_EXISTS_EXCEPTION_MESSAGE;
 import static ru.kharevich.chatservice.utils.constants.ChatServiceResponseConstantMessages.CHAT_WITH_ID_NOT_FOUND;
 
 @RequiredArgsConstructor
@@ -31,8 +34,16 @@ public class ChatServiceValidationServiceImpl implements ChatServiceValidationSe
     }
 
     @Override
-    public void validateIfThrowsUserNotFoundByUsername(String username) {
-        userFeignClient.getUserByUsernameIfExists(username);
+    public void validateIfChatAlreadyExists(Set<UUID> participants) {
+        if(!chatRepository.findByParticipants(participants).isEmpty()){
+            throw new ChatAlreadyExistsException(CHAT_ALREADY_EXISTS_EXCEPTION_MESSAGE);
+        }
+    }
+
+    @Override
+    public UserResponse validateIfThrowsUserNotFoundByUsername(String username) {
+        UserResponse userResponse = userFeignClient.getUserByUsernameIfExists(username);
+        return userResponse;
     }
 
     @Override
