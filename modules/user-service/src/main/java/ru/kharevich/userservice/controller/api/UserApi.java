@@ -8,10 +8,12 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
+import ru.kharevich.userservice.dto.request.RefreshTokenRequest;
 import ru.kharevich.userservice.dto.request.SignInRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.dto.response.UserResponse;
@@ -43,4 +45,5 @@ public interface UserApi {
 
     AccessTokenResponse sighIn(@RequestBody @Valid SignInRequest request, HttpServletResponse serverResponse);
 
+    AccessTokenResponse refreshToken(@RequestBody @Valid RefreshTokenRequest request);
 }

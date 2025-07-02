@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.kharevich.userservice.controller.api.UserApi;
 import ru.kharevich.userservice.dto.request.AccountRecoverRequest;
+import ru.kharevich.userservice.dto.request.RefreshTokenRequest;
 import ru.kharevich.userservice.dto.request.SignInRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.dto.response.UserResponse;
@@ -104,6 +105,12 @@ public class UserController implements UserApi {
                                       HttpServletResponse serverResponse) {
         AccessTokenResponse response = keycloakUserService.sighIn(request);
         return response;
+    }
+
+    @PostMapping("/refresh-token")
+    @ResponseStatus(HttpStatus.OK)
+    public AccessTokenResponse refreshToken(@RequestBody @Valid RefreshTokenRequest request) {
+        return keycloakUserService.refreshToken(request);
     }
 
 }
