@@ -1,9 +1,6 @@
 package ru.kharevich.userservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -21,6 +18,7 @@ import ru.kharevich.userservice.util.mapper.UserEventMapper;
 import ru.kharevich.userservice.util.mapper.UserMapper;
 import ru.kharevich.userservice.util.validation.UserValidationService;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,6 +28,7 @@ import static ru.kharevich.userservice.model.AccountStatus.MODIFYING;
 import static ru.kharevich.userservice.model.UserModifyEventType.CREATE_EVENT;
 import static ru.kharevich.userservice.model.UserModifyEventType.DELETE_EVENT;
 import static ru.kharevich.userservice.model.UserModifyEventType.UPDATE_EVENT;
+import static ru.kharevich.userservice.util.constants.UserServiceResponseConstantMessages.USER_NOT_FOUND_BY_USERNAME_MESSAGE;
 import static ru.kharevich.userservice.util.constants.UserServiceResponseConstantMessages.USER_NOT_FOUND_MESSAGE;
 
 @RequiredArgsConstructor
@@ -48,25 +47,21 @@ public class UserServiceImpl implements UserService {
 
     private final JwtUtils jwtUtils;
 
-    @Cacheable(value = "users", key = "'page_' + #page_number + '_size_' + #size")
     @Override
     public Page<UserResponse> getAll(int page_number, int size) {
         Page<User> users = userRepository.findByAccountStatus(EXISTS, PageRequest.of(page_number, size));
         return users.map(userMapper::toResponse);
     }
 
-    @Cacheable(value = "users", keyGenerator = "userCacheKeyGenerator")
-    @Override
     public UserResponse getUser() {
         String userName = jwtUtils.getPreferredUsername();
         Optional<User> user = userRepository.findByUsername(userName);
         if (user.isEmpty()) {
-            throw new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(userName));
+            throw new UserNotFoundException(USER_NOT_FOUND_BY_USERNAME_MESSAGE.formatted(userName));
         }
         return userMapper.toResponse(user.get());
     }
 
-    @CachePut(value = "users", keyGenerator = "userCacheKeyGenerator")
     @Override
     public UserResponse create(UserRequest dto) {
         userValidationService.throwsRepeatedUserDataExceptionForCreation(dto);
@@ -79,7 +74,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponse(user);
     }
 
-    @CachePut(value = "users", keyGenerator = "userCacheKeyGenerator")
     @Override
     public UserResponse update(UserRequest request) {
         UUID id = UUID.fromString(jwtUtils.getUserId());
@@ -96,7 +90,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponse(resultUser);
     }
 
-    @CacheEvict(value = "users", key = "#id")
     @Override
     public void delete(UUID id) {
         User user = userValidationService.throwsUserNotFoundException(id);
@@ -107,14 +100,12 @@ public class UserServiceImpl implements UserService {
         userEventProducer.publishEventRequest(transferEntity);
     }
 
-    @CacheEvict(value = "users", key = "#id")
     @Override
     public void absoluteDelete(UUID id) {
         User user = userValidationService.throwsUserNotFoundException(id);
         userRepository.delete(user);
     }
 
-    @CachePut(value = "users", key = "#request.id()")
     @Override
     public UserResponse recoverTheAccount(AccountRecoverRequest request) {
         User user = userValidationService.throwsUserNotFoundExceptionForDeletedUsers(request.id());
@@ -123,7 +114,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
-    @CachePut(value = "users", key = "#request.id()")
     @Override
     public UserResponse recoverTheAccountAndPostEvent(AccountRecoverRequest request) {
         User user = userValidationService.throwsUserNotFoundExceptionForDeletedUsers(request.id());
@@ -149,7 +139,18 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @Cacheable(value = "users", key = "#username")
+    @Override
+    public Page<UserResponse> getUserByUsernameStartingWith(String username, int page_number, int size) {
+        Page<User> users = userRepository.findByUsernameStartingWithIgnoreCase(username, PageRequest.of(page_number, size));
+        return users.map(userMapper::toResponse);
+    }
+
+    @Override
+    public UserResponse getUserById(UUID id) {
+        User user = userValidationService.throwsUserNotFoundException(id);
+        return userMapper.toResponse(user);
+    }
+
     @Override
     public UserResponse getUserByUsername(String username) {
         Optional<User> user = userRepository.findByUsername(username);
@@ -157,14 +158,6 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username));
         }
         return userMapper.toResponse(user.get());
-    }
-
-    @Cacheable(value = "users", key = "#id")
-    @Override
-    public UserResponse getUserById(UUID id) {
-        System.out.println("cached");
-        User user = userValidationService.throwsUserNotFoundException(id);
-        return userMapper.toResponse(user);
     }
 
 }

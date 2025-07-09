@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-    <component name="AmplicodeJpaPluginProjectSettings">
-        <option name="lastSelectedLanguage" value="Java"/>
-    </component>
+  <component name="AmplicodeJpaPluginProjectSettings">
+    <option name="lastSelectedLanguage" value="Java" />
+  </component>
+  <component name="AmplicodePersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit moduleName="user-service" name="Default">
+        <packages>
+          <package value="ru.kharevich.userservice" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
 </project>

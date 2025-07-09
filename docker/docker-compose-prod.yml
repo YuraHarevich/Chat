@@ -1,0 +1,284 @@
+services:
+  chat-service:
+    container_name: ms-chat
+    build:
+      context: ../modules/chat-service
+      dockerfile: ../../docker/Dockerfile
+      args:
+        SERVICE_NAME: chat-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      LOKI_URL: http://loki:3100
+      SPRING_REDIS_HOST: ms_redis
+      SPRING_REDIS_PORT: 6379
+    restart: always
+    ports:
+      - "8010:8010"
+    depends_on:
+      - chat_mongo
+      - kafka
+      - redis
+    networks:
+      - microservices-net
+
+  user-service:
+    container_name: ms-user
+    build:
+      context: ../modules/user-service
+      dockerfile: ../../docker/Dockerfile
+      args:
+        SERVICE_NAME: user-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      LOKI_URL: http://loki:3100
+    restart: always
+    ports:
+      - "8020:8020"
+    depends_on:
+      - user_postgres
+      - kafka
+      - redis
+      - keycloak
+    networks:
+      - microservices-net
+
+  discovery-service:
+    container_name: ms-discovery
+    build:
+      context: ../modules/discovery-service
+      dockerfile: ../../docker/Dockerfile
+      args:
+        SERVICE_NAME: discovery-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      LOKI_URL: http://loki:3100
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-net
+
+  gateway-service:
+    container_name: ms-gateway
+    build:
+      context: ../modules/api-gateway
+      dockerfile: ../../docker/Dockerfile
+      args:
+        SERVICE_NAME: api-gateway
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      LOKI_URL: http://loki:3100
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - discovery-service
+      - chat-service
+      - user-service
+    networks:
+      - microservices-net
+
+  chat_mongo:
+    container_name: chat_mongo_ms
+    image: mongo:8.0.9
+    restart: "unless-stopped"
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_ms_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: chat
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongosh admin -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --quiet | grep 1
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+    networks:
+      - microservices-net
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:2181"
+    networks:
+      - microservices-net
+
+  kafka:
+    container_name: ms_kafka
+    image: confluentinc/cp-kafka:latest
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://ms_kafka:9092
+    networks:
+      - microservices-net
+
+  kafka_ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    restart: "no"
+    ports:
+      - "8989:8180"
+    environment:
+      SERVER_PORT: 8180
+      DYNAMIC_CONFIG_ENABLED: "true"
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: ms_kafka:9092
+    networks:
+      - microservices-net
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8180/actuator/health || exit -1
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
+    depends_on:
+      - kafka
+      - zookeeper
+
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:latest
+    container_name: victoria-metrics
+    ports:
+      - "8428:8428"
+    volumes:
+      - ../log-directory/victoria-metrics/promscrape.yml:/victoria-metrics/promscrape.yml
+    networks:
+      - microservices-net
+    command:
+      - '--promscrape.config=/victoria-metrics/promscrape.yml'
+      - '--promscrape.config.strictParse=false'
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    container_name: grafana
+    volumes:
+      - ../log-directory/grafana:/var/lib/grafana
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    ports:
+      - "3000:3000"
+    networks:
+      - microservices-net
+
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: loki
+    volumes:
+      - ../log-directory/loki:/etc/loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/loki-config.yml
+    networks:
+      - microservices-net
+
+  tempo:
+    container_name: tempo
+    image: grafana/tempo:2.6.0
+    command: [ "-config.file=/etc/tempo-config.yml" ]
+    volumes:
+      - ../log-directory/tempo/tempo-config.yml:/etc/tempo-config.yml
+    ports:
+      - "14268:14268"
+      - "3200:3200"
+      - "55680:55680"
+      - "55681:55681"
+      - "9411:9411"
+      - "4318:4318"
+      - "4317:4317"
+    networks:
+      - microservices-net
+
+  keycloak:
+    container_name: keycloak-ms
+    image: quay.io/keycloak/keycloak:26.1
+    ports:
+      - 8080:8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL_HOST: user_postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_DATABASE: user_db
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: password
+    command:
+      - "start-dev"
+    depends_on:
+      - user_postgres
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - microservices-net
+
+  user_postgres:
+    container_name: ms_user_db
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user_db
+      PGDATA: /data/postgres
+    volumes:
+      - user_postgres:/data/postgres
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+    networks:
+      - microservices-net
+
+  redis:
+    container_name: ms_redis
+    image: redis:8.0.2
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+    networks:
+      - microservices-net
+
+  frontend:
+    build: ../frontend
+    ports:
+      - "3001:80"
+    environment:
+      - REACT_APP_API_BASE_URL=http://ms-gateway:8000
+    depends_on:
+      - gateway-service
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+    driver: bridge
+
+volumes:
+  mongo_ms_data:
+  user_postgres:
+  redis_data:

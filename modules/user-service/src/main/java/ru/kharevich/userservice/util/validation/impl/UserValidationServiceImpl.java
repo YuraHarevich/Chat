@@ -64,7 +64,7 @@ public class UserValidationServiceImpl implements UserValidationService {
             throw new RepeatedUserDataException(USER_REPEATED_DATA_MESSAGE);
         }
         if (users.size() == 1) {
-            if (users.getFirst().getId().equals(id)) {
+            if (!users.getFirst().getId().equals(id)) {
                 log.info("UserValidationServiceImpl.Error while update, users with such username {} or email {} already exists", request.username(), request.email());
                 throw new RepeatedUserDataException(USER_REPEATED_DATA_MESSAGE);
             }

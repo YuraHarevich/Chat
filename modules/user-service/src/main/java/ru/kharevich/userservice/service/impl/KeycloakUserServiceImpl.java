@@ -1,5 +1,6 @@
 package ru.kharevich.userservice.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.kharevich.userservice.dto.request.RefreshTokenRequest;
 import ru.kharevich.userservice.dto.request.SignInRequest;
 import ru.kharevich.userservice.dto.request.UserRequest;
 import ru.kharevich.userservice.exceptions.UserModifyingException;
@@ -26,11 +28,18 @@ import ru.kharevich.userservice.service.KeycloakUserService;
 import ru.kharevich.userservice.util.constants.ApplicationConstants;
 import ru.kharevich.userservice.util.props.KeycloakProperties;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static ru.kharevich.userservice.util.constants.UserServiceResponseConstantMessages.USER_CREATION_EXCEPTION_MESSAGE;
 import static ru.kharevich.userservice.util.constants.UserServiceResponseConstantMessages.USER_CREATION_EXCEPTION_WHILE_REQUEST_MESSAGE;
@@ -104,6 +113,42 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         }
     }
 
+    @Override
+    public AccessTokenResponse refreshToken(RefreshTokenRequest request) {
+        try {
+            // Формируем параметры запроса
+            Map<String, String> params = new HashMap<>();
+            params.put("grant_type", "refresh_token");
+            params.put("refresh_token", request.refreshToken());
+            params.put("client_id", keycloakProperties.getClientId());
+            params.put("client_secret", keycloakProperties.getClientSecret());
+
+            // Создаем HTTP запрос
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(keycloakProperties.getAuthUrl() + "/realms/" +
+                            keycloakProperties.getRealm() + "/protocol/openid-connect/token"))
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .POST(HttpRequest.BodyPublishers.ofString(
+                            params.entrySet().stream()
+                                    .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
+                                    .collect(Collectors.joining("&"))))
+                    .build();
+
+            // Отправляем запрос
+            HttpResponse<String> response = HttpClient.newHttpClient()
+                    .send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+                return new ObjectMapper().readValue(response.body(), AccessTokenResponse.class);
+            } else {
+                throw new RuntimeException("Refresh token failed: " + response.body());
+            }
+        } catch (Exception e) {
+            log.error("Refresh token error", e);
+            throw new RuntimeException("Refresh token processing failed");
+        }
+    }
+
 
     @Override
     public void updateUser(String userId, UserRequest request) {
@@ -132,6 +177,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
             throw new UserModifyingException(USER_UPDATE_EXCEPTION_MESSAGE);
         }
     }
+
 
     @Override
     public void deleteUser(String userId) {

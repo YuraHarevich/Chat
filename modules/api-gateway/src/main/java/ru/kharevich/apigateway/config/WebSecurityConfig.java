@@ -33,6 +33,7 @@ public class WebSecurityConfig {
                         .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/users/sign-in").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/users/sign-up").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/api/v1/users/refresh-token").permitAll()
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         .pathMatchers("/api/v1/users/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")

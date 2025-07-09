@@ -62,7 +62,7 @@ public class SagaEventHandlerServiceImpl implements SagaEventHandlerService {
                 try {
                     keycloakUserService.updateUser(message.externalId().toString(), userRequest);
                 } catch (Exception ex) {
-                    log.debug(ex.getMessage());
+                    log.debug("SagaEventHandlerServiceImpl.handleEvent: exception while updating: {}", ex.getMessage());
                     UserEventTransferEntity newMessage = new UserEventTransferEntity(
                             message.id(),
                             message.externalId(),
@@ -100,8 +100,8 @@ public class SagaEventHandlerServiceImpl implements SagaEventHandlerService {
                 userService.absoluteDelete(message.id());
             }
             case UPDATE_COMPENSATION_EVENT -> {
-                userService.update(userRequest);
-                userService.setExistsStatus(message.id());
+//                userService.update(userRequest);
+//                userService.setExistsStatus(message.id());
             }
             case DELETE_COMPENSATION_EVENT -> {
                 userService.recoverTheAccount(

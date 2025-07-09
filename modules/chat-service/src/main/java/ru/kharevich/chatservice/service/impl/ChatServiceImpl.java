@@ -78,6 +78,7 @@ public class ChatServiceImpl implements ChatService {
     @CacheEvict(value = {"chats", "userChats"}, allEntries = true)
     public ChatResponse createChat(ChatRequest chatRequest) {
         chatServiceValidationService.validateIfThrowsUsersNotFound(chatRequest.participants());
+        chatServiceValidationService.validateIfChatAlreadyExists(chatRequest.participants());
         Chat chat = chatMapper.toEntity(chatRequest);
 
         UUID chatSharedId = UUID.randomUUID();
@@ -94,10 +95,8 @@ public class ChatServiceImpl implements ChatService {
         return chatMapper.toResponse(individualChat);
     }
 
-    @Cacheable(value = "chatMessages", key = "{#chatId, #pageNumber, #size}")
     public PageableResponse<MessageResponse> getMessagesByUniqueChatId(int size, int pageNumber, ObjectId chatId) {
         chatServiceValidationService.validateIfThrowsChatNotFoundByChatId(chatId);
-
         Page<Message> messagePage = messageRepository.findByChatIdOrderBySentTimeDesc(chatId, PageRequest.of(pageNumber, size));
         Page<MessageResponse> convertedToResponseMessagePage = messagePage.map(messageMapper::toResponse);
         return pageMapper.toResponse(convertedToResponseMessagePage);
@@ -105,7 +104,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Cacheable(value = "userChats", key = "{#username, #pageNumber, #size}")
     public PageableResponse<FrontChatResponse> getAllChatsByUsername(String username, int size, int pageNumber) {
-        UserResponse userResponse = userFeignClient.getUserByUsernameIfExists(username);
+        UserResponse userResponse = chatServiceValidationService.validateIfThrowsUserNotFoundByUsername(username);
         UUID userId = userResponse.id();
 
         Page<Chat> chats = chatRepository.findByOwner(userId, PageRequest.of(pageNumber, size));
@@ -125,7 +124,6 @@ public class ChatServiceImpl implements ChatService {
     @Caching(
             evict = {
                     @CacheEvict(value = "chat", key = "#result.id"),
-                    @CacheEvict(value = "chatMessages", key = "{#result.sharedId, #result.sender}")
             }
     )
     public MessageResponse sendMessage(MessageRequest messageRequest) {
