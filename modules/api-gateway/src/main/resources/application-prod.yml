@@ -1,0 +1,6 @@
+keycloak:
+  domain: keycloak-ms
+eureka:
+  client:
+    service-url:
+      defaultZone: http://ms-discovery:8761/eureka

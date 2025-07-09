@@ -45,7 +45,7 @@ services:
   discovery-service:
     container_name: ms-discovery
     build:
-      context: ../services/discovery-service
+      context: ../modules/discovery-service
       dockerfile: ../../docker/Dockerfile
       args:
         SERVICE_NAME: discovery-service
@@ -61,10 +61,10 @@ services:
   gateway-service:
     container_name: ms-gateway
     build:
-      context: ../services/gateway-service
+      context: ../modules/api-gateway
       dockerfile: ../../docker/Dockerfile
       args:
-        SERVICE_NAME: gateway-service
+        SERVICE_NAME: api-gateway
     environment:
       SPRING_PROFILES_ACTIVE: prod
       LOKI_URL: http://loki:3100
@@ -222,6 +222,11 @@ services:
       - "start-dev"
     depends_on:
       - user_postgres
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - microservices-net
 
@@ -259,14 +264,13 @@ services:
       - microservices-net
 
   frontend:
-    container_name: frontend
     build: ../frontend
     ports:
       - "3001:80"
     environment:
       - REACT_APP_API_BASE_URL=http://ms-gateway:8000
-      - REACT_APP_API_VERSION=v1
-      - REACT_APP_WS_URL=ws://ms-gateway:8000/ws-chat
+    depends_on:
+      - gateway-service
     networks:
       - microservices-net
 
