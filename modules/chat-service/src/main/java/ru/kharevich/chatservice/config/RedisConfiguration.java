@@ -15,13 +15,13 @@ import java.time.Duration;
 @EnableCaching
 class RedisConfiguration {
 
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName("localhost");
-        config.setPort(6379);
-        return new LettuceConnectionFactory(config);
-    }
+//    @Bean
+//    public RedisConnectionFactory redisConnectionFactory() {
+//        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+//        config.setHostName("localhost");
+//        config.setPort(6379);
+//        return new LettuceConnectionFactory(config);
+//    }
 
     @Bean
     RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {

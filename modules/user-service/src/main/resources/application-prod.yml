@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${USER_DB_HOST:ms_user_db}:5432/user_db
+    username: postgres
+    password: password
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_HOST:ms_kafka}:9092
+    producer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_HOST:ms_kafka}:9092
+    consumer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_HOST:ms_kafka}:9092
+keycloak:
+  domain: keycloak-ms
+  clientId: client-api
+  clientSecret: uy9qYdDPk9CoYakehhGSRED6F9JV0ZKX
+  auth-url: http://${keycloak.domain}:8080
+  realm: chat-realm
+  default-role: USER
+management:
+  zipkin:
+    tracing:
+      endpoint: ${TEMPO_ZIPKIN_URL:http://tempo:9411/api/v2/spans}
+eureka:
+  client:
+    service-url:
+      defaultZone: http://ms-discovery:8761/eureka

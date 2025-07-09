@@ -1,4 +1,83 @@
 services:
+  chat-service:
+    container_name: ms-chat
+    build:
+      context: ../modules/chat-service
+      dockerfile: ../../docker/Dockerfile
+      args:
+        SERVICE_NAME: chat-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      LOKI_URL: http://loki:3100
+      SPRING_REDIS_HOST: ms_redis
+      SPRING_REDIS_PORT: 6379
+    restart: always
+    ports:
+      - "8010:8010"
+    depends_on:
+      - chat_mongo
+      - kafka
+      - redis
+    networks:
+      - microservices-net
+
+  user-service:
+    container_name: ms-user
+    build:
+      context: ../modules/user-service
+      dockerfile: ../../docker/Dockerfile
+      args:
+        SERVICE_NAME: user-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      LOKI_URL: http://loki:3100
+    restart: always
+    ports:
+      - "8020:8020"
+    depends_on:
+      - user_postgres
+      - kafka
+      - redis
+      - keycloak
+    networks:
+      - microservices-net
+
+  discovery-service:
+    container_name: ms-discovery
+    build:
+      context: ../services/discovery-service
+      dockerfile: ../../docker/Dockerfile
+      args:
+        SERVICE_NAME: discovery-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      LOKI_URL: http://loki:3100
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-net
+
+  gateway-service:
+    container_name: ms-gateway
+    build:
+      context: ../services/gateway-service
+      dockerfile: ../../docker/Dockerfile
+      args:
+        SERVICE_NAME: gateway-service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      LOKI_URL: http://loki:3100
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - discovery-service
+      - chat-service
+      - user-service
+    networks:
+      - microservices-net
+
   chat_mongo:
     container_name: chat_mongo_ms
     image: mongo:8.0.9
@@ -17,7 +96,8 @@ services:
       timeout: 5s
       start_period: 10s
       retries: 5
-
+    networks:
+      - microservices-net
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -35,8 +115,7 @@ services:
     container_name: ms_kafka
     image: confluentinc/cp-kafka:latest
     ports:
-      - "9092:9092"  # Внешний порт для подключения с хоста
-      - "9093:9093"  # Дополнительный порт для внутренних подключений
+      - "9092:9092"
     depends_on:
       - zookeeper
     environment:
@@ -44,10 +123,8 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://ms_kafka:9093,EXTERNAL://localhost:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://ms_kafka:9092
     networks:
       - microservices-net
 
@@ -60,7 +137,7 @@ services:
       SERVER_PORT: 8180
       DYNAMIC_CONFIG_ENABLED: "true"
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: ms_kafka:9093
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: ms_kafka:9092
     networks:
       - microservices-net
     healthcheck:
@@ -178,6 +255,18 @@ services:
       timeout: 5s
       start_period: 10s
       retries: 5
+    networks:
+      - microservices-net
+
+  frontend:
+    container_name: frontend
+    build: ../frontend
+    ports:
+      - "3001:80"
+    environment:
+      - REACT_APP_API_BASE_URL=http://ms-gateway:8000
+      - REACT_APP_API_VERSION=v1
+      - REACT_APP_WS_URL=ws://ms-gateway:8000/ws-chat
     networks:
       - microservices-net
 

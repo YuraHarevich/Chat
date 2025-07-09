@@ -1,0 +1,23 @@
+server:
+  port: 8010
+spring:
+  data:
+    mongodb:
+      uri: mongodb://root:password@${CHAT_DB_HOST:chat_mongo_ms}:27017/chat?authSource=admin
+    redis:
+      host: ${SPRING_REDIS_HOST:ms_redis}
+      port: ${SPRING_REDIS_PORT:6379}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_HOST:ms_kafka}:9092
+    producer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_HOST:ms_kafka}:9092
+    consumer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_HOST:ms_kafka}:9092
+management:
+  zipkin:
+    tracing:
+      endpoint: ${TEMPO_ZIPKIN_URL:http://tempo:9411/api/v2/spans}
+eureka:
+  client:
+    service-url:
+      defaultZone: http://ms-discovery:8761/eureka
